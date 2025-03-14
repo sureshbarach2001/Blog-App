@@ -38,14 +38,17 @@ export default function Navbar() {
       />
     ));
     setRiftParticles(particles);
-  }, [riftPosition]); // Re-run when riftPosition changes
+  }, [riftPosition]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (navRef.current) {
       const rect = navRef.current.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width) * 100;
       const y = ((e.clientY - rect.top) / rect.height) * 100;
-      setRiftPosition({ x: Math.max(10, Math.min(90, x)), y: Math.max(10, Math.min(90, y)) });
+      setRiftPosition({
+        x: Math.max(10, Math.min(90, x)),
+        y: Math.max(10, Math.min(90, y)),
+      });
     }
   };
 
@@ -90,7 +93,10 @@ export default function Navbar() {
     }
   };
 
-  const handleNavigate = async (path: string, key: keyof typeof loadingStates) => {
+  const handleNavigate = async (
+    path: string,
+    key: keyof typeof loadingStates
+  ) => {
     setLoadingStates((prev) => ({ ...prev, [key]: true }));
     try {
       await router.push(path);
@@ -111,7 +117,7 @@ export default function Navbar() {
   return (
     <nav
       ref={navRef}
-      className="fixed top-0 left-0 w-full h-[80px] bg-depth-black z-50 animate-slideIn overflow-hidden shadow-[0_0_10px_rgba(0,200,255,0.2)]"
+      className="fixed top-0 left-0 w-full h-[80px] bg-depth-black z-50 animate-slideIn overflow-visible shadow-[0_0_10px_rgba(0,200,255,0.2)]"
       onMouseMove={handleMouseMove}
     >
       <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(10,10,15,0.95),rgba(20,20,30,0.9))]">
@@ -119,24 +125,86 @@ export default function Navbar() {
         {riftParticles}
       </div>
 
-      <div className="container mx-auto px-4 h-full flex justify-between items-center relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 h-full flex items-center justify-between relative z-10">
         {/* Logo and Title */}
-        <Link href="/" className="flex items-center space-x-3 group">
+        <Link
+          href="/"
+          className="flex items-center space-x-2 sm:space-x-3 group shrink-0"
+        >
           <Image
             src="/favicon.ico"
             alt="NIVOX Logo"
-            width={90}
-            height={90}
+            width={40}
+            height={40}
             className="rounded-full transform group-hover:scale-110 transition-transform duration-300 shadow-[0_0_8px_rgba(0,200,255,0.3)]"
           />
-          <span className="text-xl font-mono text-lumen-white tracking-tight group-hover:text-lumen-cyan transition-colors duration-300">
+          <span className="text-lg sm:text-xl font-mono text-lumen-white tracking-tight group-hover:text-lumen-cyan transition-colors duration-300">
             NIVOX
           </span>
         </Link>
 
+        
+
+        {/* Navigation Links */}
+        <div
+          className={`${
+            isMenuOpen ? "flex" : "hidden"
+          } md:flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6 absolute md:static top-[80px] left-0 w-full md:w-auto bg-depth-black/95 md:bg-transparent p-4 md:p-0 transition-all duration-300 ease-in-out z-10`}
+        >
+          <button
+            onClick={() => handleNavigate("/blogs", "blogs")}
+            className="relative w-full md:w-auto text-lumen-white font-mono px-4 py-2 bg-[linear-gradient(45deg,rgba(0,200,255,0.2),rgba(0,255,200,0.2))] hover:bg-[linear-gradient(45deg,rgba(0,200,255,0.3),rgba(0,255,200,0.3))] transition-all duration-300 disabled:opacity-50 group animate-quantumPulse rounded-md text-center"
+          >
+            {loadingStates.blogs ? <Loader /> : "Blogs"}
+            <span className="absolute inset-0 bg-lumen-cyan/10 rounded-md scale-0 group-hover:scale-125 transition-transform duration-400 origin-center animate-quantumPulseGlow" />
+            <span className="absolute inset-0 border border-lumen-cyan/30 rounded-md animate-quantumPulseBorder" />
+          </button>
+
+          {user ? (
+            <>
+              <button
+                onClick={() => handleNavigate("/blogs/create", "create")}
+                className="relative w-full md:w-auto text-lumen-white font-mono px-4 py-2 bg-[linear-gradient(45deg,rgba(0,200,255,0.2),rgba(0,255,200,0.2))] hover:bg-[linear-gradient(45deg,rgba(0,200,255,0.3),rgba(0,255,200,0.3))] transition-all duration-300 disabled:opacity-50 group animate-quantumPulse rounded-md text-center"
+              >
+                {loadingStates.create ? <Loader /> : "Create Post"}
+                <span className="absolute inset-0 bg-lumen-cyan/10 rounded-md scale-0 group-hover:scale-125 transition-transform duration-400 origin-center animate-quantumPulseGlow" />
+                <span className="absolute inset-0 border border-lumen-cyan/30 rounded-md animate-quantumPulseBorder" />
+              </button>
+              <button
+                onClick={handleLogout}
+                className="relative w-full md:w-auto text-lumen-white font-mono px-4 py-2 bg-[linear-gradient(45deg,rgba(200,0,255,0.2),rgba(150,100,255,0.2))] hover:bg-[linear-gradient(45deg,rgba(200,0,255,0.3),rgba(150,100,255,0.3))] transition-all duration-300 disabled:opacity-50 group animate-quantumPulse rounded-md text-center"
+              >
+                {loadingStates.logout ? <Loader /> : "Logout"}
+                <span className="absolute inset-0 bg-lumen-magenta/10 rounded-md scale-0 group-hover:scale-125 transition-transform duration-400 origin-center animate-quantumPulseGlow" />
+                <span className="absolute inset-0 border border-lumen-magenta/30 rounded-md animate-quantumPulseBorder" />
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => handleNavigate("/auth/login", "login")}
+                className="relative w-full md:w-auto text-lumen-white font-mono px-4 py-2 bg-[linear-gradient(45deg,rgba(0,200,255,0.2),rgba(0,255,200,0.2))] hover:bg-[linear-gradient(45deg,rgba(0,200,255,0.3),rgba(0,255,200,0.3))] transition-all duration-300 disabled:opacity-50 group animate-quantumPulse rounded-md text-center"
+              >
+                {loadingStates.login ? <Loader /> : "Login"}
+                <span className="absolute inset-0 bg-lumen-cyan/10 rounded-md scale-0 group-hover:scale-125 transition-transform duration-400 origin-center animate-quantumPulseGlow" />
+                <span className="absolute inset-0 border border-lumen-cyan/30 rounded-md animate-quantumPulseBorder" />
+              </button>
+              <button
+                onClick={() => handleNavigate("/auth/register", "register")}
+                className="relative w-full md:w-auto text-lumen-white font-mono px-4 py-2 bg-[linear-gradient(45deg,rgba(200,0,255,0.2),rgba(150,100,255,0.2))] hover:bg-[linear-gradient(45deg,rgba(200,0,255,0.3),rgba(150,100,255,0.3))] transition-all duration-300 disabled:opacity-50 group animate-quantumPulse rounded-md text-center"
+              >
+                {loadingStates.register ? <Loader /> : "Register"}
+                <span className="absolute inset-0 bg-lumen-magenta/10 rounded-md scale-0 group-hover:scale-125 transition-transform duration-400 origin-center animate-quantumPulseGlow" />
+                <span className="absolute inset-0 border border-lumen-magenta/30 rounded-md animate-quantumPulseBorder" />
+              </button>
+            </>
+          )}
+        </div>
+
+
         {/* Mobile Menu Toggle */}
         <button
-          className="md:hidden text-lumen-white focus:outline-none hover:text-lumen-cyan transition-colors duration-300"
+          className="md:hidden text-lumen-white focus:outline-none hover:text-lumen-cyan transition-colors duration-300 z-20 mr-2 sm:mr-4"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           <svg
@@ -150,124 +218,174 @@ export default function Navbar() {
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth="2"
-              d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
+              d={
+                isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"
+              }
             />
           </svg>
         </button>
 
-        {/* Navigation Links */}
-        <div
-          className={`${
-            isMenuOpen ? "flex" : "hidden"
-          } md:flex flex-col md:flex-row items-center space-y-3 md:space-y-0 md:space-x-6 absolute md:static top-[80px] left-0 w-full md:w-auto bg-depth-black/95 md:bg-transparent p-4 md:p-0 transition-all duration-300 ease-in-out shadow-[0_0_10px_rgba(0,200,255,0.2)] md:shadow-none`}
-        >
-          <button
-            onClick={() => handleNavigate("/blogs", "blogs")}
-            className="relative text-lumen-white font-mono px-4 py-2 bg-[linear-gradient(45deg,rgba(0,200,255,0.2),rgba(0,255,200,0.2))] hover:bg-[linear-gradient(45deg,rgba(0,200,255,0.3),rgba(0,255,200,0.3))] transition-all duration-300 disabled:opacity-50 group animate-quantumPulse rounded-md"
-          >
-            {loadingStates.blogs ? <Loader /> : "Blogs"}
-            <span className="absolute inset-0 bg-lumen-cyan/10 rounded-md scale-0 group-hover:scale-125 transition-transform duration-400 origin-center animate-quantumPulseGlow" />
-            <span className="absolute inset-0 border border-lumen-cyan/30 rounded-md animate-quantumPulseBorder" />
-          </button>
 
-          {user ? (
-            <>
-              <button
-                onClick={() => handleNavigate("/blogs/create", "create")}
-                className="relative text-lumen-white font-mono px-4 py-2 bg-[linear-gradient(45deg,rgba(0,200,255,0.2),rgba(0,255,200,0.2))] hover:bg-[linear-gradient(45deg,rgba(0,200,255,0.3),rgba(0,255,200,0.3))] transition-all duration-300 disabled:opacity-50 group animate-quantumPulse rounded-md"
-              >
-                {loadingStates.create ? <Loader /> : "Create Post"}
-                <span className="absolute inset-0 bg-lumen-cyan/10 rounded-md scale-0 group-hover:scale-125 transition-transform duration-400 origin-center animate-quantumPulseGlow" />
-                <span className="absolute inset-0 border border-lumen-cyan/30 rounded-md animate-quantumPulseBorder" />
-              </button>
-              <button
-                onClick={handleLogout}
-                className="relative text-lumen-white font-mono px-4 py-2 bg-[linear-gradient(45deg,rgba(200,0,255,0.2),rgba(150,100,255,0.2))] hover:bg-[linear-gradient(45deg,rgba(200,0,255,0.3),rgba(150,100,255,0.3))] transition-all duration-300 disabled:opacity-50 group animate-quantumPulse rounded-md"
-              >
-                {loadingStates.logout ? <Loader /> : "Logout"}
-                <span className="absolute inset-0 bg-lumen-magenta/10 rounded-md scale-0 group-hover:scale-125 transition-transform duration-400 origin-center animate-quantumPulseGlow" />
-                <span className="absolute inset-0 border border-lumen-magenta/30 rounded-md animate-quantumPulseBorder" />
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={() => handleNavigate("/auth/login", "login")}
-                className="relative text-lumen-white font-mono px-4 py-2 bg-[linear-gradient(45deg,rgba(0,200,255,0.2),rgba(0,255,200,0.2))] hover:bg-[linear-gradient(45deg,rgba(0,200,255,0.3),rgba(0,255,200,0.3))] transition-all duration-300 disabled:opacity-50 group animate-quantumPulse rounded-md"
-              >
-                {loadingStates.login ? <Loader /> : "Login"}
-                <span className="absolute inset-0 bg-lumen-cyan/10 rounded-md scale-0 group-hover:scale-125 transition-transform duration-400 origin-center animate-quantumPulseGlow" />
-                <span className="absolute inset-0 border border-lumen-cyan/30 rounded-md animate-quantumPulseBorder" />
-              </button>
-              <button
-                onClick={() => handleNavigate("/auth/register", "register")}
-                className="relative text-lumen-white font-mono px-4 py-2 bg-[linear-gradient(45deg,rgba(200,0,255,0.2),rgba(150,100,255,0.2))] hover:bg-[linear-gradient(45deg,rgba(200,0,255,0.3),rgba(150,100,255,0.3))] transition-all duration-300 disabled:opacity-50 group animate-quantumPulse rounded-md"
-              >
-                {loadingStates.register ? <Loader /> : "Register"}
-                <span className="absolute inset-0 bg-lumen-magenta/10 rounded-md scale-0 group-hover:scale-125 transition-transform duration-400 origin-center animate-quantumPulseGlow" />
-                <span className="absolute inset-0 border border-lumen-magenta/30 rounded-md animate-quantumPulseBorder" />
-              </button>
-            </>
-          )}
-        </div>
+
       </div>
 
       <style jsx>{`
         :global(:root) {
-          --depth-black: #0A0A0F;
-          --lumen-white: #E0F0FF;
-          --lumen-cyan: #00C8FF;
-          --lumen-magenta: #FF00C8;
+          --depth-black: #0a0a0f;
+          --lumen-white: #e0f0ff;
+          --lumen-cyan: #00c8ff;
+          --lumen-magenta: #ff00c8;
         }
-        .bg-depth-black { background-color: var(--depth-black); }
-        .text-lumen-white { color: var(--lumen-white); }
-        .text-lumen-cyan { color: var(--lumen-cyan); }
-        .text-lumen-magenta { color: var(--lumen-magenta); }
-        .bg-lumen-cyan { background-color: var(--lumen-cyan); }
-        .bg-lumen-magenta { background-color: var(--lumen-magenta); }
+        .bg-depth-black {
+          background-color: var(--depth-black);
+        }
+        .text-lumen-white {
+          color: var(--lumen-white);
+        }
+        .text-lumen-cyan {
+          color: var(--lumen-cyan);
+        }
+        .text-lumen-magenta {
+          color: var(--lumen-magenta);
+        }
+        .bg-lumen-cyan {
+          background-color: var(--lumen-cyan);
+        }
+        .bg-lumen-magenta {
+          background-color: var(--lumen-magenta);
+        }
 
         @keyframes slideIn {
-          from { transform: translateY(-100%); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
+          from {
+            transform: translateY(-100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
         }
         @keyframes fluxPulse {
-          0%, 100% { opacity: 0.7; transform: scale(1); }
-          50% { opacity: 1; transform: scale(1.02); }
+          0%,
+          100% {
+            opacity: 0.7;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1.02);
+          }
         }
         @keyframes orbit {
-          0% { transform: translate(-50%, -50%) rotate(0deg); }
-          100% { transform: translate(-50%, -50%) rotate(360deg); }
+          0% {
+            transform: translate(-50%, -50%) rotate(0deg);
+          }
+          100% {
+            transform: translate(-50%, -50%) rotate(360deg);
+          }
         }
         @keyframes quantumPulse {
-          0% { transform: translate(0, 0) scale(1); opacity: 0.9; }
-          30% { transform: translate(1px, -1px) scale(1.01); opacity: 0.95; }
-          60% { transform: translate(-1px, 1px) scale(0.99); opacity: 0.85; }
-          100% { transform: translate(0, 0) scale(1); opacity: 0.9; }
+          0% {
+            transform: translate(0, 0) scale(1);
+            opacity: 0.9;
+          }
+          30% {
+            transform: translate(1px, -1px) scale(1.01);
+            opacity: 0.95;
+          }
+          60% {
+            transform: translate(-1px, 1px) scale(0.99);
+            opacity: 0.85;
+          }
+          100% {
+            transform: translate(0, 0) scale(1);
+            opacity: 0.9;
+          }
         }
         @keyframes quantumPulseGlow {
-          0% { transform: scale(0); opacity: 0.3; filter: blur(2px); }
-          40% { transform: scale(1.1); opacity: 0.5; filter: blur(1px); }
-          70% { transform: scale(0.9); opacity: 0.4; filter: blur(3px); }
-          100% { transform: scale(1); opacity: 0.3; filter: blur(2px); }
+          0% {
+            transform: scale(0);
+            opacity: 0.3;
+            filter: blur(2px);
+          }
+          40% {
+            transform: scale(1.1);
+            opacity: 0.5;
+            filter: blur(1px);
+          }
+          70% {
+            transform: scale(0.9);
+            opacity: 0.4;
+            filter: blur(3px);
+          }
+          100% {
+            transform: scale(1);
+            opacity: 0.3;
+            filter: blur(2px);
+          }
         }
         @keyframes quantumPulseBorder {
-          0% { border-color: rgba(0, 200, 255, 0.3); transform: translate(0, 0); }
-          25% { border-color: rgba(255, 0, 200, 0.35); transform: translate(0.5px, -0.5px); }
-          50% { border-color: rgba(0, 200, 255, 0.25); transform: translate(-0.5px, 0.5px); }
-          75% { border-color: rgba(255, 0, 200, 0.3); transform: translate(0, 0.5px); }
-          100% { border-color: rgba(0, 200, 255, 0.3); transform: translate(0, 0); }
+          0% {
+            border-color: rgba(0, 200, 255, 0.3);
+            transform: translate(0, 0);
+          }
+          25% {
+            border-color: rgba(255, 0, 200, 0.35);
+            transform: translate(0.5px, -0.5px);
+          }
+          50% {
+            border-color: rgba(0, 200, 255, 0.25);
+            transform: translate(-0.5px, 0.5px);
+          }
+          75% {
+            border-color: rgba(255, 0, 200, 0.3);
+            transform: translate(0, 0.5px);
+          }
+          100% {
+            border-color: rgba(0, 200, 255, 0.3);
+            transform: translate(0, 0);
+          }
         }
-        .animate-slideIn { animation: slideIn 0.5s ease-out forwards; }
+        .animate-slideIn {
+          animation: slideIn 0.5s ease-out forwards;
+        }
         .animate-fluxPulse {
           animation: fluxPulse 4s ease-in-out infinite;
           --rift-x: ${riftPosition.x}%;
           --rift-y: ${riftPosition.y}%;
         }
-        .animate-orbit { animation: orbit 6s linear infinite; }
-        .animate-quantumPulse { animation: quantumPulse 1.2s infinite ease-in-out; }
-        .animate-quantumPulseGlow { animation: quantumPulseGlow 1.5s infinite ease-in-out; }
-        .animate-quantumPulseBorder { animation: quantumPulseBorder 1.8s infinite ease-in-out; }
-        button:hover .animate-quantumPulseGlow { transform: scale(125%); }
+        .animate-orbit {
+          animation: orbit 6s linear infinite;
+        }
+        .animate-quantumPulse {
+          animation: quantumPulse 1.2s infinite ease-in-out;
+        }
+        .animate-quantumPulseGlow {
+          animation: quantumPulseGlow 1.5s infinite ease-in-out;
+        }
+        .animate-quantumPulseBorder {
+          animation: quantumPulseBorder 1.8s infinite ease-in-out;
+        }
+        button:hover .animate-quantumPulseGlow {
+          transform: scale(125%);
+        }
+
+        /* Ensure mobile menu and hamburger are responsive */
+        @media (max-width: 167px) {
+          nav {
+            overflow: visible;
+          }
+          .flex-col {
+            min-height: ${user ? "180px" : "150px"};
+            width: 100%;
+            box-shadow: 0 4px 10px rgba(0, 200, 255, 0.2);
+          }
+          button {
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+          }
+        }
       `}</style>
     </nav>
   );
