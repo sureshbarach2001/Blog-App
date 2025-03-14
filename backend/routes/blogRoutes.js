@@ -8,20 +8,22 @@ const mongoose = require('mongoose');
 // ✅ GET all blog posts
 router.get('/', async (req, res) => {
     try {
-        const blogPosts = await BlogPost.find()
-            .populate('author', 'username email')
-            .select('title content author createdAt'); // Optimize response size
-
-        if (!blogPosts.length) {
-            return res.status(404).json({ message: 'No blog posts found' });
-        }
-
-        res.status(200).json(blogPosts);
+      console.log('Fetching blog posts...');
+      const blogPosts = await BlogPost.find()
+        .populate('author', 'username email')
+        .select('title content author createdAt');
+      console.log('Blog posts fetched:', blogPosts.length);
+  
+      if (!blogPosts.length) {
+        return res.status(404).json({ message: 'No blog posts found' });
+      }
+  
+      res.status(200).json(blogPosts);
     } catch (error) {
-        console.error('Error fetching blog posts:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
+      console.error('Error fetching blog posts:', error.message, error.stack);
+      res.status(500).json({ message: 'Internal Server Error' });
     }
-});
+  });
 
 // ✅ GET a single blog post by ID
 router.get('/:id', async (req, res) => {

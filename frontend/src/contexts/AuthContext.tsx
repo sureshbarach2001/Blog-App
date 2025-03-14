@@ -1,7 +1,6 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
-import axios from "axios";
 import api from "@/lib/api";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -31,7 +30,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null); // Replace 'any' with 'User | null'
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
 
@@ -76,7 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const refreshToken = localStorage.getItem("refreshToken");
     try {
       if (refreshToken) {
-        await axios.post("http://localhost:5000/api/auth/logout", {}, {
+        await api.post("/auth/logout", {}, {
           headers: { Authorization: `Bearer ${refreshToken}` },
         });
       }

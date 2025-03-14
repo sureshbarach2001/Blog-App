@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+// Remove unused Link import since it's not used in the JSX
 import { useAuth } from "@/contexts/AuthContext";
 import api from "@/lib/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -124,7 +124,8 @@ export default function BlogCard({ blog }: { blog: BlogPost }) {
               Confirm Deletion
             </h3>
             <p className="text-gray-300 mb-6">
-              Are you sure you want to delete "<span className="font-semibold text-blue-400">{blog.title}</span>"? This action cannot be undone.
+              Are you sure you want to delete{" "}
+              <span className="font-semibold text-blue-400">&quot;{blog.title}&quot;</span>? This action cannot be undone.
             </p>
             <div className="flex justify-end gap-3">
               <button

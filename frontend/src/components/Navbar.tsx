@@ -8,7 +8,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
 export default function Navbar() {
-  const { user, logout, isLoading: authLoading } = useAuth();
+  const { user, logout, isLoading } = useAuth(); // Use 'isLoading' instead of 'authLoading'
   const router = useRouter();
   const pathname = usePathname();
   const [loadingStates, setLoadingStates] = useState({
@@ -82,6 +82,15 @@ export default function Navbar() {
       setIsMenuOpen(false);
     }
   };
+
+  // If authentication state is loading, show a minimal loading UI
+  if (isLoading) {
+    return (
+      <nav className="fixed top-0 left-0 w-full h-[80px] bg-depth-black z-50 flex items-center justify-center">
+        <Loader />
+      </nav>
+    );
+  }
 
   return (
     <nav
