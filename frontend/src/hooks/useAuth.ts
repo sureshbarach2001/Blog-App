@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import api from "@/lib/api";
 import { useQueryClient } from "@tanstack/react-query";
+import { User } from "@/types"; // Import User type
 
 // Simple event emitter for auth state changes
 const authEventEmitter = {
@@ -20,7 +21,7 @@ const authEventEmitter = {
 };
 
 export function useAuth() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null); // Use User type
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
 

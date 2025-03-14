@@ -123,7 +123,7 @@ export default function Navbar() {
         {/* Logo and Title */}
         <Link href="/" className="flex items-center space-x-3 group">
           <Image
-            src="https://assets.grok.com/users/e55a76f6-9de3-4b01-b387-6f930e4d3db7/FdtcuE5DS4x1Cc8n-generated_image.jpg"
+            src="/favicon.ico"
             alt="NIVOX Logo"
             width={90}
             height={90}

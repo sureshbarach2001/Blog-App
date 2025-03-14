@@ -28,8 +28,9 @@ interface ApiError {
   message?: string;
 }
 
-export default function EditBlogPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function EditBlogPage({ params }: { params: any }) {
+  const { id } = params as { id: string }; // Safely cast params to expected shape
   const { user } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();

@@ -4,18 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
 import Loader from "@/components/Loader";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react"; // Added useState and useEffect
+import { useState, useEffect } from "react";
+import { BlogPost } from "@/types";
 
-type BlogPost = {
-  _id: string;
-  title: string;
-  content: string;
-  author: { _id: string; username: string; email: string };
-  createdAt: string;
-};
-
-export default function BlogPage({ params }: { params: { id: string } }) {
-  const { id } = params; // Directly destructure id from params (not a Promise in Client Component)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function BlogPage({ params }: { params: any }) {
+  const { id } = params as { id: string }; // Safely cast params to expected shape
   const router = useRouter();
   const [latticeNodes, setLatticeNodes] = useState<React.ReactNode[]>([]);
 
@@ -97,7 +91,7 @@ export default function BlogPage({ params }: { params: { id: string } }) {
             <p className="text-sm text-lumen-white/70 italic">
               By{" "}
               <span className="font-semibold text-lumen-cyan hover:text-lumen-magenta transition-colors duration-300">
-                {blog.author.username}
+                {blog.author?.username ?? "Unknown Author"}
               </span>{" "}
               on{" "}
               <span className="font-semibold">

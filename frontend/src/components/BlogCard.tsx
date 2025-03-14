@@ -22,8 +22,8 @@ export default function BlogCard({ blog }: { blog: BlogPost }) {
       setIsDialogOpen(false);
     },
     onError: (error) => {
-      console.error("Delete failed:", error); // Log error for debugging
-      setIsDialogOpen(false); // Close dialog; consider showing an error message
+      console.error("Delete failed:", error);
+      setIsDialogOpen(false);
     },
   });
 
@@ -38,14 +38,12 @@ export default function BlogCard({ blog }: { blog: BlogPost }) {
   const handleNavigate = (path: string) => {
     setIsNavigating(true);
     router.push(path);
-    // Reset isNavigating after navigation completes (optional, since component unmounts)
-    setTimeout(() => setIsNavigating(false), 300); // Approximate navigation duration
+    setTimeout(() => setIsNavigating(false), 300);
   };
 
   return (
     <>
       <div className="bg-gray-900 rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-[0_0_15px_rgba(59,130,246,0.5)]">
-        {/* Card Content */}
         <div className="p-6">
           <h2 className="text-2xl font-extrabold text-white tracking-tight mb-2 hover:text-blue-400 transition-colors duration-300 truncate">
             {blog.title}
@@ -63,8 +61,6 @@ export default function BlogCard({ blog }: { blog: BlogPost }) {
               {new Date(blog.createdAt).toLocaleDateString()}
             </span>
           </p>
-
-          {/* Buttons */}
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => handleNavigate(`/blogs/${blog._id}`)}
@@ -80,7 +76,6 @@ export default function BlogCard({ blog }: { blog: BlogPost }) {
                 <span className="absolute inset-0 rounded-full border border-blue-400 opacity-0 hover:opacity-100 transition-opacity duration-300" />
               )}
             </button>
-
             {user?._id === blog.author?._id && (
               <>
                 <button
@@ -117,7 +112,6 @@ export default function BlogCard({ blog }: { blog: BlogPost }) {
         </div>
       </div>
 
-      {/* Delete Confirmation Dialog */}
       {isDialogOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
           <div className="bg-gray-900 rounded-xl shadow-2xl p-6 w-full max-w-md transform transition-all duration-300 animate-fadeInUp">
@@ -127,7 +121,7 @@ export default function BlogCard({ blog }: { blog: BlogPost }) {
             <p className="text-gray-300 mb-6">
               Are you sure you want to delete{" "}
               <span className="font-semibold text-blue-400">
-                "{blog.title}"
+                &quot;{blog.title}&quot;
               </span>
               ? This action cannot be undone.
             </p>
@@ -158,7 +152,6 @@ export default function BlogCard({ blog }: { blog: BlogPost }) {
         </div>
       )}
 
-      {/* Custom CSS for Animations */}
       <style jsx>{`
         @keyframes fadeInUp {
           from {
