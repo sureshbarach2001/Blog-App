@@ -14,6 +14,17 @@ type BlogForm = {
   content: string;
 };
 
+// Define an interface for the error object
+interface ApiError {
+  response?: {
+    data?: {
+      message?: string;
+    };
+    status?: number;
+  };
+  message?: string;
+}
+
 export default function CreateBlogPage() {
   const { user } = useAuth();
   const router = useRouter();
@@ -34,10 +45,11 @@ export default function CreateBlogPage() {
       queryClient.invalidateQueries({ queryKey: ["blogs"] });
       router.push("/blogs");
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => { // Use 'unknown' instead of 'any'
+      const apiError = error as ApiError; // Type assertion to ApiError
       setError("root", {
         type: "manual",
-        message: error.response?.data?.message || "Failed to create blog post",
+        message: apiError.response?.data?.message || "Failed to create blog post",
       });
     },
   });
@@ -213,7 +225,8 @@ export default function CreateBlogPage() {
           }
         }
         @keyframes latticeNode {
-          0%, 100% {
+          0%,
+          100% {
             opacity: 0.2;
             transform: scale(1);
           }
@@ -223,19 +236,23 @@ export default function CreateBlogPage() {
           }
         }
         @keyframes depthGlow {
-          0%, 100% {
+          0%,
+          100% {
             text-shadow: 0 0 5px rgba(0, 200, 255, 0.3);
           }
           50% {
-            text-shadow: 0 0 10px rgba(0, 200, 255, 0.5), 0 0 5px rgba(255, 0, 200, 0.5);
+            text-shadow: 0 0 10px rgba(0, 200, 255, 0.5),
+              0 0 5px rgba(255, 0, 200, 0.5);
           }
         }
         @keyframes depthEdge {
-          0%, 100% {
+          0%,
+          100% {
             box-shadow: 0 0 15px rgba(0, 200, 255, 0.5);
           }
           50% {
-            box-shadow: 0 0 25px rgba(0, 200, 255, 0.7), 0 0 10px rgba(255, 0, 200, 0.7);
+            box-shadow: 0 0 25px rgba(0, 200, 255, 0.7),
+              0 0 10px rgba(255, 0, 200, 0.7);
           }
         }
         @keyframes paneRise {
@@ -249,7 +266,8 @@ export default function CreateBlogPage() {
           }
         }
         @keyframes paneTrail {
-          0%, 100% {
+          0%,
+          100% {
             opacity: 0.5;
             transform: scale(1);
           }
@@ -259,7 +277,8 @@ export default function CreateBlogPage() {
           }
         }
         @keyframes paneEdge {
-          0%, 100% {
+          0%,
+          100% {
             border-color: rgba(0, 200, 255, 0.2);
           }
           50% {

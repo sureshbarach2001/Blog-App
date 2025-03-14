@@ -5,18 +5,33 @@ import axios from "axios";
 import api from "@/lib/api";
 import { useQueryClient } from "@tanstack/react-query";
 
+// Define the User type
+interface User {
+  _id: string;
+  username: string;
+  email: string;
+}
+
+// Define the Auth response type for login/register
+interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  user: User;
+}
+
+// Update AuthContextType with specific types
 interface AuthContextType {
-  user: any;
+  user: User | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<any>;
-  register: (username: string, email: string, password: string) => Promise<any>;
+  login: (email: string, password: string) => Promise<AuthResponse>;
+  register: (username: string, email: string, password: string) => Promise<AuthResponse>;
   logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null); // Replace 'any' with 'User | null'
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
 
@@ -28,10 +43,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const login = useCallback(async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string): Promise<AuthResponse> => {
     setIsLoading(true);
     try {
-      const { data } = await api.post("/auth/login", { email, password });
+      const { data } = await api.post<AuthResponse>("/auth/login", { email, password });
       localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("refreshToken", data.refreshToken);
       localStorage.setItem("user", JSON.stringify(data.user));
@@ -42,10 +57,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const register = useCallback(async (username: string, email: string, password: string) => {
+  const register = useCallback(async (username: string, email: string, password: string): Promise<AuthResponse> => {
     setIsLoading(true);
     try {
-      const { data } = await api.post("/auth/register", { username, email, password });
+      const { data } = await api.post<AuthResponse>("/auth/register", { username, email, password });
       localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("refreshToken", data.refreshToken);
       localStorage.setItem("user", JSON.stringify(data.user));

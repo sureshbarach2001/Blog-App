@@ -22,6 +22,17 @@ type BlogPost = {
   author: { _id: string; username: string; email: string };
 };
 
+// Define an interface for the error object
+interface ApiError {
+  response?: {
+    data?: {
+      message?: string;
+    };
+    status?: number;
+  };
+  message?: string;
+}
+
 export default function EditBlogPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params); // Unwrap params with React.use()
   const { user } = useAuth();
@@ -59,10 +70,11 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
       queryClient.invalidateQueries({ queryKey: ["blogs"] });
       router.push("/blogs");
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => { // Use 'unknown' instead of 'any'
+      const apiError = error as ApiError; // Type assertion to ApiError
       setError("root", {
         type: "manual",
-        message: error.response?.data?.message || "Failed to update blog post",
+        message: apiError.response?.data?.message || "Failed to update blog post",
       });
     },
   });
@@ -261,7 +273,8 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
           }
         }
         @keyframes latticeNode {
-          0%, 100% {
+          0%,
+          100% {
             opacity: 0.2;
             transform: scale(1);
           }
@@ -271,19 +284,23 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
           }
         }
         @keyframes depthGlow {
-          0%, 100% {
+          0%,
+          100% {
             text-shadow: 0 0 5px rgba(0, 200, 255, 0.3);
           }
           50% {
-            text-shadow: 0 0 10px rgba(0, 200, 255, 0.5), 0 0 5px rgba(255, 0, 200, 0.5);
+            text-shadow: 0 0 10px rgba(0, 200, 255, 0.5),
+              0 0 5px rgba(255, 0, 200, 0.5);
           }
         }
         @keyframes depthEdge {
-          0%, 100% {
+          0%,
+          100% {
             box-shadow: 0 0 15px rgba(0, 200, 255, 0.5);
           }
           50% {
-            box-shadow: 0 0 25px rgba(0, 200, 255, 0.7), 0 0 10px rgba(255, 0, 200, 0.7);
+            box-shadow: 0 0 25px rgba(0, 200, 255, 0.7),
+              0 0 10px rgba(255, 0, 200, 0.7);
           }
         }
         @keyframes paneRise {
@@ -297,7 +314,8 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
           }
         }
         @keyframes paneTrail {
-          0%, 100% {
+          0%,
+          100% {
             opacity: 0.5;
             transform: scale(1);
           }
@@ -307,7 +325,8 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
           }
         }
         @keyframes paneEdge {
-          0%, 100% {
+          0%,
+          100% {
             border-color: rgba(0, 200, 255, 0.2);
           }
           50% {
@@ -315,7 +334,8 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
           }
         }
         @keyframes depthFade {
-          0%, 100% {
+          0%,
+          100% {
             opacity: 0.7;
           }
           50% {

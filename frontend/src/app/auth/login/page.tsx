@@ -7,10 +7,16 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Loader from "@/components/Loader";
 
+// Define the LoginForm type (already present in your code)
 type LoginForm = {
   email: string;
   password: string;
 };
+
+// Define an interface for the error (to replace 'any')
+interface AuthError {
+  message?: string; // Optional, as errors might not always have a message
+}
 
 export default function LoginPage() {
   const { login, isLoading } = useAuth();
@@ -28,10 +34,11 @@ export default function LoginPage() {
     try {
       await login(data.email, data.password);
       router.push("/blogs");
-    } catch (error: any) {
+    } catch (error: unknown) { // Use 'unknown' instead of 'any' for stricter typing
+      const authError = error as AuthError; // Type assertion to AuthError
       setError("root", {
         type: "manual",
-        message: error.message || "Login failed. Please check your credentials.",
+        message: authError.message || "Login failed. Please check your credentials.",
       });
     }
   };
@@ -124,7 +131,7 @@ export default function LoginPage() {
                   placeholder="Enter your password"
                   className={`w-full p-3 bg-depth-black text-lumen-white border border-lumen-cyan/20 rounded-md focus:outline-none focus:ring-2 focus:ring-lumen-cyan transition-all duration-300 ${
                     errors.password
-                      ? "border-lumen-magenta"
+                      ? "border-lumen-mag Какаяenta"
                       : "hover:border-lumen-cyan/50"
                   }`}
                   disabled={isLoading}
@@ -197,7 +204,8 @@ export default function LoginPage() {
           }
         }
         @keyframes latticeNode {
-          0%, 100% {
+          0%,
+          100% {
             opacity: 0.2;
             transform: scale(1);
           }
@@ -207,19 +215,23 @@ export default function LoginPage() {
           }
         }
         @keyframes depthGlow {
-          0%, 100% {
+          0%,
+          100% {
             text-shadow: 0 0 5px rgba(0, 200, 255, 0.3);
           }
           50% {
-            text-shadow: 0 0 10px rgba(0, 200, 255, 0.5), 0 0 5px rgba(255, 0, 200, 0.5);
+            text-shadow: 0 0 10px rgba(0, 200, 255, 0.5),
+              0 0 5px rgba(255, 0, 200, 0.5);
           }
         }
         @keyframes depthEdge {
-          0%, 100% {
+          0%,
+          100% {
             box-shadow: 0 0 15px rgba(0, 200, 255, 0.5);
           }
           50% {
-            box-shadow: 0 0 25px rgba(0, 200, 255, 0.7), 0 0 10px rgba(255, 0, 200, 0.7);
+            box-shadow: 0 0 25px rgba(0, 200, 255, 0.7),
+              0 0 10px rgba(255, 0, 200, 0.7);
           }
         }
         @keyframes paneRise {
@@ -233,7 +245,8 @@ export default function LoginPage() {
           }
         }
         @keyframes paneTrail {
-          0%, 100% {
+          0%,
+          100% {
             opacity: 0.5;
             transform: scale(1);
           }
@@ -243,7 +256,8 @@ export default function LoginPage() {
           }
         }
         @keyframes paneEdge {
-          0%, 100% {
+          0%,
+          100% {
             border-color: rgba(0, 200, 255, 0.2);
           }
           50% {

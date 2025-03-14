@@ -14,6 +14,18 @@ type RegisterForm = {
   password: string;
 };
 
+// Define an interface for the error object
+interface AuthError {
+  response?: {
+    data?: {
+      message?: string;
+      errors?: { msg: string }[];
+    };
+    status?: number;
+  };
+  message?: string;
+}
+
 export default function RegisterPage() {
   const { register: authRegister, isLoading } = useAuth();
   const router = useRouter();
@@ -32,16 +44,17 @@ export default function RegisterPage() {
     try {
       await authRegister(data.username, data.email, data.password);
       router.push("/blogs");
-    } catch (error: any) {
+    } catch (error: unknown) { // Use 'unknown' instead of 'any'
+      const authError = error as AuthError; // Type assertion to AuthError
       const errorMessage =
-        error.response?.data?.message ||
-        error.response?.data?.errors?.[0]?.msg ||
+        authError.response?.data?.message ||
+        authError.response?.data?.errors?.[0]?.msg ||
         "Registration failed. Please try again.";
       setServerError(errorMessage);
       console.error("Registration failed:", {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
+        message: authError.message,
+        response: authError.response?.data,
+        status: authError.response?.status,
       });
     }
   };
@@ -231,7 +244,8 @@ export default function RegisterPage() {
           }
         }
         @keyframes latticeNode {
-          0%, 100% {
+          0%,
+          100% {
             opacity: 0.2;
             transform: scale(1);
           }
@@ -241,19 +255,23 @@ export default function RegisterPage() {
           }
         }
         @keyframes depthGlow {
-          0%, 100% {
+          0%,
+          100% {
             text-shadow: 0 0 5px rgba(0, 200, 255, 0.3);
           }
           50% {
-            text-shadow: 0 0 10px rgba(0, 200, 255, 0.5), 0 0 5px rgba(255, 0, 200, 0.5);
+            text-shadow: 0 0 10px rgba(0, 200, 255, 0.5),
+              0 0 5px rgba(255, 0, 200, 0.5);
           }
         }
         @keyframes depthEdge {
-          0%, 100% {
+          0%,
+          100% {
             box-shadow: 0 0 15px rgba(0, 200, 255, 0.5);
           }
           50% {
-            box-shadow: 0 0 25px rgba(0, 200, 255, 0.7), 0 0 10px rgba(255, 0, 200, 0.7);
+            box-shadow: 0 0 25px rgba(0, 200, 255, 0.7),
+              0 0 10px rgba(255, 0, 200, 0.7);
           }
         }
         @keyframes paneRise {
@@ -267,7 +285,8 @@ export default function RegisterPage() {
           }
         }
         @keyframes paneTrail {
-          0%, 100% {
+          0%,
+          100% {
             opacity: 0.5;
             transform: scale(1);
           }
@@ -277,7 +296,8 @@ export default function RegisterPage() {
           }
         }
         @keyframes paneEdge {
-          0%, 100% {
+          0%,
+          100% {
             border-color: rgba(0, 200, 255, 0.2);
           }
           50% {
