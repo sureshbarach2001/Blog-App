@@ -1,10 +1,10 @@
 "use client";
 
-import { use } from "react";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
 import Loader from "@/components/Loader";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react"; // Added useState and useEffect
 
 type BlogPost = {
   _id: string;
@@ -14,14 +14,31 @@ type BlogPost = {
   createdAt: string;
 };
 
-export default function BlogPage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = use(params); // Unwrap params with React.use()
+export default function BlogPage({ params }: { params: { id: string } }) {
+  const { id } = params; // Directly destructure id from params (not a Promise in Client Component)
   const router = useRouter();
+  const [latticeNodes, setLatticeNodes] = useState<React.ReactNode[]>([]);
+
+  // Generate lattice nodes only on client-side mount
+  useEffect(() => {
+    const nodes = Array.from({ length: 20 }).map((_, i) => (
+      <div
+        key={i}
+        className="absolute w-1 h-1 bg-lumen-white/20 rounded-full animate-latticeNode"
+        style={{
+          left: `${Math.random() * 100}%`,
+          top: `${Math.random() * 100}%`,
+          animationDelay: `${Math.random() * 2}s`,
+        }}
+      />
+    ));
+    setLatticeNodes(nodes);
+  }, []);
 
   const { data: blog, isLoading, error } = useQuery<BlogPost>({
-    queryKey: ["blog", resolvedParams.id],
+    queryKey: ["blog", id],
     queryFn: async () => {
-      const { data } = await api.get(`/blogs/${resolvedParams.id}`);
+      const { data } = await api.get(`/blogs/${id}`);
       return data;
     },
   });
@@ -51,19 +68,7 @@ export default function BlogPage({ params }: { params: Promise<{ id: string }> }
       {/* Infinite-Depth Lattice */}
       <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(20,20,30,0.9)_50%,rgba(0,0,0,1)_50%)] bg-[length:30px_30px] animate-latticeDrift">
         <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(20,20,30,0.9)_50%,rgba(0,0,0,1)_50%)] bg-[length:30px_30px] animate-latticeDriftReverse" />
-        <div className="absolute inset-0">
-          {Array.from({ length: 20 }).map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-1 h-1 bg-lumen-white/20 rounded-full animate-latticeNode"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 2}s`,
-              }}
-            />
-          ))}
-        </div>
+        <div className="absolute inset-0">{latticeNodes}</div>
       </div>
 
       {/* Heading Section */}
@@ -108,10 +113,10 @@ export default function BlogPage({ params }: { params: Promise<{ id: string }> }
       <style jsx>{`
         /* Custom Depth Colors */
         :global(:root) {
-          --depth-black: #0A0A0F; /* Deep, rich black */
-          --lumen-white: #E0F0FF; /* Soft, luminous white */
-          --lumen-cyan: #00C8FF; /* Vibrant cyan */
-          --lumen-magenta: #FF00C8; /* Bright magenta */
+          --depth-black: #0A0A0F;
+          --lumen-white: #E0F0FF;
+          --lumen-cyan: #00C8FF;
+          --lumen-magenta: #FF00C8;
         }
         .bg-depth-black {
           background-color: var(--depth-black);
@@ -146,7 +151,8 @@ export default function BlogPage({ params }: { params: Promise<{ id: string }> }
           }
         }
         @keyframes latticeNode {
-          0%, 100% {
+          0%,
+          100% {
             opacity: 0.2;
             transform: scale(1);
           }
@@ -156,19 +162,23 @@ export default function BlogPage({ params }: { params: Promise<{ id: string }> }
           }
         }
         @keyframes depthGlow {
-          0%, 100% {
+          0%,
+          100% {
             text-shadow: 0 0 5px rgba(0, 200, 255, 0.3);
           }
           50% {
-            text-shadow: 0 0 10px rgba(0, 200, 255, 0.5), 0 0 5px rgba(255, 0, 200, 0.5);
+            text-shadow: 0 0 10px rgba(0, 200, 255, 0.5),
+              0 0 5px rgba(255, 0, 200, 0.5);
           }
         }
         @keyframes depthEdge {
-          0%, 100% {
+          0%,
+          100% {
             box-shadow: 0 0 15px rgba(0, 200, 255, 0.5);
           }
           50% {
-            box-shadow: 0 0 25px rgba(0, 200, 255, 0.7), 0 0 10px rgba(255, 0, 200, 0.7);
+            box-shadow: 0 0 25px rgba(0, 200, 255, 0.7),
+              0 0 10px rgba(255, 0, 200, 0.7);
           }
         }
         @keyframes paneRise {
@@ -182,7 +192,8 @@ export default function BlogPage({ params }: { params: Promise<{ id: string }> }
           }
         }
         @keyframes paneTrail {
-          0%, 100% {
+          0%,
+          100% {
             opacity: 0.5;
             transform: scale(1);
           }
@@ -192,7 +203,8 @@ export default function BlogPage({ params }: { params: Promise<{ id: string }> }
           }
         }
         @keyframes paneEdge {
-          0%, 100% {
+          0%,
+          100% {
             border-color: rgba(0, 200, 255, 0.2);
           }
           50% {
@@ -200,7 +212,8 @@ export default function BlogPage({ params }: { params: Promise<{ id: string }> }
           }
         }
         @keyframes depthFade {
-          0%, 100% {
+          0%,
+          100% {
             opacity: 0.7;
           }
           50% {

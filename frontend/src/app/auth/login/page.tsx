@@ -2,43 +2,51 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema } from "@/utils/validation";
+import { loginSchema, LoginForm } from "@/utils/validation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import Loader from "@/components/Loader";
 
-// Define the LoginForm type (already present in your code)
-type LoginForm = {
-  email: string;
-  password: string;
-};
-
-// Define an interface for the error (to replace 'any')
 interface AuthError {
-  message?: string; // Optional, as errors might not always have a message
+  response?: {
+    data?: {
+      errors?: string[]; // Matches Joi's error format
+    };
+    status?: number;
+  };
+  message?: string;
 }
 
 export default function LoginPage() {
   const { login, isLoading } = useAuth();
   const router = useRouter();
+  const [serverError, setServerError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setError,
   } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
   });
 
   const onSubmit = async (data: LoginForm) => {
+    setServerError(null);
     try {
       await login(data.email, data.password);
       router.push("/blogs");
-    } catch (error: unknown) { // Use 'unknown' instead of 'any' for stricter typing
-      const authError = error as AuthError; // Type assertion to AuthError
-      setError("root", {
-        type: "manual",
-        message: authError.message || "Login failed. Please check your credentials.",
+    } catch (error: unknown) {
+      const authError = error as AuthError;
+      const errorMessage =
+        authError.response?.data?.errors?.[0] || // First error from Joi validation
+        authError.message ||
+        "Login failed. Please check your credentials.";
+      setServerError(errorMessage);
+      console.error("Login failed:", {
+        message: authError.message,
+        response: authError.response?.data,
+        status: authError.response?.status,
       });
     }
   };
@@ -87,9 +95,9 @@ export default function LoginPage() {
         <div className="relative w-full max-w-md transform transition-all duration-500 animate-paneRise">
           <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(0,200,255,0.2),rgba(255,0,200,0.2))] opacity-50 rounded-xl animate-paneTrail" />
           <div className="relative z-10 bg-depth-black/80 p-6 rounded-xl shadow-[0_0_20px_rgba(0,200,255,0.5)] hover:shadow-[0_0_30px_rgba(0,200,255,0.7)] transition-all duration-300">
-            {errors.root && (
+            {serverError && (
               <p className="text-lumen-magenta mb-4 text-center font-medium animate-pulse text-sm sm:text-base">
-                {errors.root.message}
+                {serverError}
               </p>
             )}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -128,10 +136,10 @@ export default function LoginPage() {
                   {...register("password")}
                   id="password"
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder="Enter your password (min 8 characters)"
                   className={`w-full p-3 bg-depth-black text-lumen-white border border-lumen-cyan/20 rounded-md focus:outline-none focus:ring-2 focus:ring-lumen-cyan transition-all duration-300 ${
                     errors.password
-                      ? "border-lumen-mag Какаяenta"
+                      ? "border-lumen-magenta"
                       : "hover:border-lumen-cyan/50"
                   }`}
                   disabled={isLoading}
@@ -163,10 +171,10 @@ export default function LoginPage() {
       <style jsx>{`
         /* Custom Depth Colors */
         :global(:root) {
-          --depth-black: #0A0A0F; /* Deep, rich black */
-          --lumen-white: #E0F0FF; /* Soft, luminous white */
-          --lumen-cyan: #00C8FF; /* Vibrant cyan */
-          --lumen-magenta: #FF00C8; /* Bright magenta */
+          --depth-black: #0A0A0F;
+          --lumen-white: #E0F0FF;
+          --lumen-cyan: #00C8FF;
+          --lumen-magenta: #FF00C8;
         }
         .bg-depth-black {
           background-color: var(--depth-black);

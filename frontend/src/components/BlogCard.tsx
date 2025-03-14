@@ -1,6 +1,5 @@
 "use client";
 
-// Remove unused Link import since it's not used in the JSX
 import { useAuth } from "@/contexts/AuthContext";
 import api from "@/lib/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -13,17 +12,18 @@ export default function BlogCard({ blog }: { blog: BlogPost }) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const router = useRouter();
-  const [isNavigating, setIsNavigating] = useState(false); // Local state for navigation
-  const [isDialogOpen, setIsDialogOpen] = useState(false); // State for delete confirmation dialog
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const deleteMutation = useMutation({
     mutationFn: () => api.delete(`/blogs/${blog._id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["blogs"] });
-      setIsDialogOpen(false); // Close dialog on success
+      setIsDialogOpen(false);
     },
-    onError: () => {
-      setIsDialogOpen(false); // Close dialog on error (optional: add error handling)
+    onError: (error) => {
+      console.error("Delete failed:", error); // Log error for debugging
+      setIsDialogOpen(false); // Close dialog; consider showing an error message
     },
   });
 
@@ -32,13 +32,14 @@ export default function BlogCard({ blog }: { blog: BlogPost }) {
   };
 
   const handleDelete = () => {
-    setIsDialogOpen(true); // Open the dialog instead of native confirm
+    setIsDialogOpen(true);
   };
 
-  const handleNavigate = async (path: string) => {
+  const handleNavigate = (path: string) => {
     setIsNavigating(true);
-    await router.push(path); // Wait for navigation (client-side)
-    setIsNavigating(false); // Note: This won’t run post-navigation, but kept for consistency
+    router.push(path);
+    // Reset isNavigating after navigation completes (optional, since component unmounts)
+    setTimeout(() => setIsNavigating(false), 300); // Approximate navigation duration
   };
 
   return (
@@ -125,7 +126,10 @@ export default function BlogCard({ blog }: { blog: BlogPost }) {
             </h3>
             <p className="text-gray-300 mb-6">
               Are you sure you want to delete{" "}
-              <span className="font-semibold text-blue-400">&quot;{blog.title}&quot;</span>? This action cannot be undone.
+              <span className="font-semibold text-blue-400">
+                "{blog.title}"
+              </span>
+              ? This action cannot be undone.
             </p>
             <div className="flex justify-end gap-3">
               <button

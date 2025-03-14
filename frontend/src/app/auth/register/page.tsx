@@ -2,24 +2,17 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { registerSchema } from "@/utils/validation";
+import { registerSchema, RegisterForm } from "@/utils/validation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Loader from "@/components/Loader";
 
-type RegisterForm = {
-  username: string;
-  email: string;
-  password: string;
-};
-
-// Define an interface for the error object
 interface AuthError {
   response?: {
     data?: {
       message?: string;
-      errors?: { msg: string }[];
+      errors?: string[]; // Updated to match Joi's error format
     };
     status?: number;
   };
@@ -44,11 +37,11 @@ export default function RegisterPage() {
     try {
       await authRegister(data.username, data.email, data.password);
       router.push("/blogs");
-    } catch (error: unknown) { // Use 'unknown' instead of 'any'
-      const authError = error as AuthError; // Type assertion to AuthError
+    } catch (error: unknown) {
+      const authError = error as AuthError;
       const errorMessage =
         authError.response?.data?.message ||
-        authError.response?.data?.errors?.[0]?.msg ||
+        authError.response?.data?.errors?.[0] || // Joi returns errors as an array of strings
         "Registration failed. Please try again.";
       setServerError(errorMessage);
       console.error("Registration failed:", {
@@ -119,7 +112,7 @@ export default function RegisterPage() {
                 <input
                   {...register("username")}
                   id="username"
-                  placeholder="Enter your username"
+                  placeholder="Enter your username (letters, numbers, _)"
                   className={`w-full p-3 bg-depth-black text-lumen-white border border-lumen-cyan/20 rounded-md focus:outline-none focus:ring-2 focus:ring-lumen-cyan transition-all duration-300 ${
                     errors.username
                       ? "border-lumen-magenta"
@@ -168,7 +161,7 @@ export default function RegisterPage() {
                   {...register("password")}
                   id="password"
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder="Min 8 chars, 1 upper, 1 lower, 1 num, 1 special (@$!%*?&)"
                   className={`w-full p-3 bg-depth-black text-lumen-white border border-lumen-cyan/20 rounded-md focus:outline-none focus:ring-2 focus:ring-lumen-cyan transition-all duration-300 ${
                     errors.password
                       ? "border-lumen-magenta"
@@ -203,10 +196,10 @@ export default function RegisterPage() {
       <style jsx>{`
         /* Custom Depth Colors */
         :global(:root) {
-          --depth-black: #0A0A0F; /* Deep, rich black */
-          --lumen-white: #E0F0FF; /* Soft, luminous white */
-          --lumen-cyan: #00C8FF; /* Vibrant cyan */
-          --lumen-magenta: #FF00C8; /* Bright magenta */
+          --depth-black: #0A0A0F;
+          --lumen-white: #E0F0FF;
+          --lumen-cyan: #00C8FF;
+          --lumen-magenta: #FF00C8;
         }
         .bg-depth-black {
           background-color: var(--depth-black);

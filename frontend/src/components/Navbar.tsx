@@ -8,7 +8,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
 export default function Navbar() {
-  const { user, logout, isLoading } = useAuth(); // Use 'isLoading' instead of 'authLoading'
+  const { user, logout, isLoading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [loadingStates, setLoadingStates] = useState({
@@ -21,7 +21,24 @@ export default function Navbar() {
   });
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [riftPosition, setRiftPosition] = useState({ x: 50, y: 50 });
+  const [riftParticles, setRiftParticles] = useState<React.ReactNode[]>([]);
   const navRef = useRef<HTMLDivElement>(null);
+
+  // Generate rift particles only on client-side mount and update with riftPosition
+  useEffect(() => {
+    const particles = Array.from({ length: 3 }).map((_, i) => (
+      <div
+        key={i}
+        className="absolute w-1 h-1 bg-lumen-cyan/50 rounded-full shadow-[0_0_5px_rgba(0,200,255,0.4)] animate-orbit"
+        style={{
+          left: `${riftPosition.x + Math.cos(i * 2.094) * 10}%`,
+          top: `${riftPosition.y + Math.sin(i * 2.094) * 10}%`,
+          animationDelay: `${i * 0.5}s`,
+        }}
+      />
+    ));
+    setRiftParticles(particles);
+  }, [riftPosition]); // Re-run when riftPosition changes
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (navRef.current) {
@@ -83,7 +100,6 @@ export default function Navbar() {
     }
   };
 
-  // If authentication state is loading, show a minimal loading UI
   if (isLoading) {
     return (
       <nav className="fixed top-0 left-0 w-full h-[80px] bg-depth-black z-50 flex items-center justify-center">
@@ -100,17 +116,7 @@ export default function Navbar() {
     >
       <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(10,10,15,0.95),rgba(20,20,30,0.9))]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_var(--rift-x)_var(--rift-y),rgba(0,200,255,0.15),transparent_60%)] animate-fluxPulse" />
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-lumen-cyan/50 rounded-full shadow-[0_0_5px_rgba(0,200,255,0.4)] animate-orbit"
-            style={{
-              left: `${riftPosition.x + Math.cos(i * 2.094) * 10}%`,
-              top: `${riftPosition.y + Math.sin(i * 2.094) * 10}%`,
-              animationDelay: `${i * 0.5}s`,
-            }}
-          />
-        ))}
+        {riftParticles}
       </div>
 
       <div className="container mx-auto px-4 h-full flex justify-between items-center relative z-10">

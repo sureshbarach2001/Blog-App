@@ -2,18 +2,13 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { blogSchema } from "@/utils/validation";
+import { blogSchema, BlogForm } from "@/utils/validation";
 import api from "@/lib/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { useEffect, use } from "react";
+import { useEffect, useState } from "react";
 import Loader from "@/components/Loader";
-
-type BlogForm = {
-  title: string;
-  content: string;
-};
 
 type BlogPost = {
   _id: string;
@@ -22,30 +17,48 @@ type BlogPost = {
   author: { _id: string; username: string; email: string };
 };
 
-// Define an interface for the error object
 interface ApiError {
   response?: {
     data?: {
       message?: string;
+      errors?: string[];
     };
     status?: number;
   };
   message?: string;
 }
 
-export default function EditBlogPage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = use(params); // Unwrap params with React.use()
+export default function EditBlogPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const { user } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [latticeNodes, setLatticeNodes] = useState<React.ReactNode[]>([]);
+
+  // Generate lattice nodes only on client-side mount
+  useEffect(() => {
+    const nodes = Array.from({ length: 20 }).map((_, i) => (
+      <div
+        key={i}
+        className="absolute w-1 h-1 bg-lumen-white/20 rounded-full animate-latticeNode"
+        style={{
+          left: `${Math.random() * 100}%`,
+          top: `${Math.random() * 100}%`,
+          animationDelay: `${Math.random() * 2}s`,
+        }}
+      />
+    ));
+    setLatticeNodes(nodes);
+  }, []);
 
   const { data: blog, isLoading, error } = useQuery<BlogPost>({
-    queryKey: ["blog", resolvedParams.id],
+    queryKey: ["blog", id],
     queryFn: async () => {
-      const { data } = await api.get(`/blogs/${resolvedParams.id}`);
+      const { data } = await api.get(`/blogs/${id}`);
       return data;
     },
-    enabled: !!resolvedParams.id,
+    enabled: !!id,
   });
 
   const {
@@ -53,7 +66,6 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
     handleSubmit,
     formState: { errors },
     reset,
-    setError,
   } = useForm<BlogForm>({
     resolver: zodResolver(blogSchema),
   });
@@ -65,16 +77,22 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
   }, [blog, reset]);
 
   const mutation = useMutation({
-    mutationFn: (data: BlogForm) => api.put(`/blogs/${resolvedParams.id}`, data),
+    mutationFn: (data: BlogForm) => api.put(`/blogs/${id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["blogs"] });
       router.push("/blogs");
     },
-    onError: (error: unknown) => { // Use 'unknown' instead of 'any'
-      const apiError = error as ApiError; // Type assertion to ApiError
-      setError("root", {
-        type: "manual",
-        message: apiError.response?.data?.message || "Failed to update blog post",
+    onError: (error: unknown) => {
+      const apiError = error as ApiError;
+      const errorMessage =
+        apiError.response?.data?.message ||
+        apiError.response?.data?.errors?.[0] ||
+        "Failed to update blog post";
+      setServerError(errorMessage);
+      console.error("Blog update failed:", {
+        message: apiError.message,
+        response: apiError.response?.data,
+        status: apiError.response?.status,
       });
     },
   });
@@ -85,12 +103,10 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
       return;
     }
     if (user._id !== blog?.author._id) {
-      setError("root", {
-        type: "manual",
-        message: "You are not authorized to edit this post",
-      });
+      setServerError("You are not authorized to edit this post");
       return;
     }
+    setServerError(null);
     mutation.mutate(data);
   };
 
@@ -116,25 +132,13 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
 
   return (
     <div
-      data-edit-page // Added here to enable copy/paste
+      data-edit-page
       className="fixed inset-0 bg-depth-black flex flex-col overflow-hidden pt-[80px] z-10"
     >
       {/* Infinite-Depth Lattice */}
       <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(20,20,30,0.9)_50%,rgba(0,0,0,1)_50%)] bg-[length:30px_30px] animate-latticeDrift">
         <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(20,20,30,0.9)_50%,rgba(0,0,0,1)_50%)] bg-[length:30px_30px] animate-latticeDriftReverse" />
-        <div className="absolute inset-0">
-          {Array.from({ length: 20 }).map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-1 h-1 bg-lumen-white/20 rounded-full animate-latticeNode"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 2}s`,
-              }}
-            />
-          ))}
-        </div>
+        <div className="absolute inset-0">{latticeNodes}</div>
       </div>
 
       {/* Heading Section */}
@@ -153,13 +157,13 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
       </div>
 
       {/* Form */}
-      <div className="flex-1 w-full p-4 sm:p-6 overflow-y-auto z-10 mt-[120px] sm:mt-[140px] flex items-start justify-center">
+      <div className="flex-1 w-full p-4 sm:p-6 overflow-y-auto z-10 mt-[60px] sm:mt-[80px] flex items-center justify-center">
         <div className="relative w-full max-w-4xl transform transition-all duration-500 animate-paneRise">
           <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(0,200,255,0.2),rgba(255,0,200,0.2))] opacity-50 rounded-xl animate-paneTrail" />
           <div className="relative z-10 bg-depth-black/80 p-6 rounded-xl shadow-[0_0_20px_rgba(0,200,255,0.5)] hover:shadow-[0_0_30px_rgba(0,200,255,0.7)] transition-all duration-300">
-            {errors.root && (
+            {serverError && (
               <p className="text-lumen-magenta mb-4 text-center font-medium animate-pulse text-sm sm:text-base">
-                {errors.root.message}
+                {serverError}
               </p>
             )}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -173,7 +177,7 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
                 <input
                   {...register("title")}
                   id="title"
-                  placeholder="Enter blog title"
+                  placeholder="Enter blog title (required)"
                   className={`w-full p-3 bg-depth-black text-lumen-white border border-lumen-cyan/20 rounded-md focus:outline-none focus:ring-2 focus:ring-lumen-cyan transition-all duration-300 ${
                     errors.title
                       ? "border-lumen-magenta"
@@ -197,7 +201,7 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
                 <textarea
                   {...register("content")}
                   id="content"
-                  placeholder="Write your blog content here"
+                  placeholder="Write your blog content here (min 10 characters)"
                   className={`w-full p-3 bg-depth-black text-lumen-white border border-lumen-cyan/20 rounded-md h-40 focus:outline-none focus:ring-2 focus:ring-lumen-cyan transition-all duration-300 resize-y ${
                     errors.content
                       ? "border-lumen-magenta"
@@ -232,10 +236,10 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
       <style jsx>{`
         /* Custom Depth Colors */
         :global(:root) {
-          --depth-black: #0A0A0F; /* Deep, rich black */
-          --lumen-white: #E0F0FF; /* Soft, luminous white */
-          --lumen-cyan: #00C8FF; /* Vibrant cyan */
-          --lumen-magenta: #FF00C8; /* Bright magenta */
+          --depth-black: #0A0A0F;
+          --lumen-white: #E0F0FF;
+          --lumen-cyan: #00C8FF;
+          --lumen-magenta: #FF00C8;
         }
         .bg-depth-black {
           background-color: var(--depth-black);

@@ -6,11 +6,28 @@ import BlogCard from "@/components/BlogCard";
 import { BlogPost } from "@/types";
 import Loader from "@/components/Loader";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Added useEffect
 
 export default function BlogsPage() {
   const router = useRouter();
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  const [latticeNodes, setLatticeNodes] = useState<React.ReactNode[]>([]);
+
+  // Generate lattice nodes only on client-side mount
+  useEffect(() => {
+    const nodes = Array.from({ length: 20 }).map((_, i) => (
+      <div
+        key={i}
+        className="absolute w-1 h-1 bg-lumen-white/20 rounded-full animate-latticeNode"
+        style={{
+          left: `${Math.random() * 100}%`,
+          top: `${Math.random() * 100}%`,
+          animationDelay: `${Math.random() * 2}s`,
+        }}
+      />
+    ));
+    setLatticeNodes(nodes);
+  }, []);
 
   const { data: blogs, isLoading, error } = useQuery<BlogPost[]>({
     queryKey: ["blogs"],
@@ -45,19 +62,7 @@ export default function BlogsPage() {
       {/* Infinite-Depth Lattice */}
       <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(20,20,30,0.9)_50%,rgba(0,0,0,1)_50%)] bg-[length:30px_30px] animate-latticeDrift">
         <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(20,20,30,0.9)_50%,rgba(0,0,0,1)_50%)] bg-[length:30px_30px] animate-latticeDriftReverse" />
-        <div className="absolute inset-0">
-          {Array.from({ length: 20 }).map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-1 h-1 bg-lumen-white/20 rounded-full animate-latticeNode"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 2}s`,
-              }}
-            />
-          ))}
-        </div>
+        <div className="absolute inset-0">{latticeNodes}</div>
       </div>
 
       {/* Heading Section */}
@@ -113,10 +118,10 @@ export default function BlogsPage() {
       <style jsx>{`
         /* Custom Depth Colors */
         :global(:root) {
-          --depth-black: #0A0A0F; /* Deep, rich black */
-          --lumen-white: #E0F0FF; /* Soft, luminous white */
-          --lumen-cyan: #00C8FF; /* Vibrant cyan */
-          --lumen-magenta: #FF00C8; /* Bright magenta */
+          --depth-black: #0A0A0F;
+          --lumen-white: #E0F0FF;
+          --lumen-cyan: #00C8FF;
+          --lumen-magenta: #FF00C8;
         }
         .bg-depth-black {
           background-color: var(--depth-black);
@@ -148,7 +153,8 @@ export default function BlogsPage() {
           }
         }
         @keyframes latticeNode {
-          0%, 100% {
+          0%,
+          100% {
             opacity: 0.2;
             transform: scale(1);
           }
@@ -158,19 +164,23 @@ export default function BlogsPage() {
           }
         }
         @keyframes depthGlow {
-          0%, 100% {
+          0%,
+          100% {
             text-shadow: 0 0 5px rgba(0, 200, 255, 0.3);
           }
           50% {
-            text-shadow: 0 0 10px rgba(0, 200, 255, 0.5), 0 0 5px rgba(255, 0, 200, 0.5);
+            text-shadow: 0 0 10px rgba(0, 200, 255, 0.5),
+              0 0 5px rgba(255, 0, 200, 0.5);
           }
         }
         @keyframes depthEdge {
-          0%, 100% {
+          0%,
+          100% {
             box-shadow: 0 0 15px rgba(0, 200, 255, 0.5);
           }
           50% {
-            box-shadow: 0 0 25px rgba(0, 200, 255, 0.7), 0 0 10px rgba(255, 0, 200, 0.7);
+            box-shadow: 0 0 25px rgba(0, 200, 255, 0.7),
+              0 0 10px rgba(255, 0, 200, 0.7);
           }
         }
         @keyframes paneRise {
@@ -184,7 +194,8 @@ export default function BlogsPage() {
           }
         }
         @keyframes paneTrail {
-          0%, 100% {
+          0%,
+          100% {
             opacity: 0.8;
             transform: perspective(500px) rotateY(5deg) rotateX(-5deg);
           }
@@ -194,7 +205,8 @@ export default function BlogsPage() {
           }
         }
         @keyframes paneEdge {
-          0%, 100% {
+          0%,
+          100% {
             border-color: rgba(0, 200, 255, 0.2);
           }
           50% {
@@ -202,7 +214,8 @@ export default function BlogsPage() {
           }
         }
         @keyframes depthFade {
-          0%, 100% {
+          0%,
+          100% {
             opacity: 0.7;
           }
           50% {
