@@ -43,67 +43,67 @@ export default function BlogCard({ blog }: { blog: BlogPost }) {
 
   return (
     <>
-      <div className="bg-gray-900 rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+      <div className="bg-depth-black rounded-xl shadow-[0_0_10px_rgba(0,200,255,0.2)] overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(0,200,255,0.5)]">
         <div className="p-6">
-          <h2 className="text-2xl font-extrabold text-white tracking-tight mb-2 hover:text-blue-400 transition-colors duration-300 truncate">
+          <h2 className="text-2xl font-extrabold font-mono text-lumen-white tracking-tight mb-2 hover:text-lumen-cyan transition-colors duration-300 truncate animate-depthGlow">
             {blog.title}
           </h2>
-          <p className="text-gray-300 text-base leading-relaxed mb-4 line-clamp-3">
+          <p className="text-lumen-white/70 text-base font-light leading-relaxed mb-4 line-clamp-3">
             {blog.content}
           </p>
-          <p className="text-sm text-gray-400 italic mb-4">
+          <p className="text-sm text-lumen-white/50 font-light italic mb-4">
             By{" "}
-            <span className="font-semibold text-blue-400 hover:text-blue-300 transition-colors duration-300">
+            <span className="font-medium text-lumen-cyan hover:text-lumen-cyan/80 transition-colors duration-300">
               {blog.author?.username ?? "Unknown Author"}
             </span>{" "}
             on{" "}
-            <span className="font-semibold">
+            <span className="font-medium">
               {new Date(blog.createdAt).toLocaleDateString()}
             </span>
           </p>
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => handleNavigate(`/blogs/${blog._id}`)}
-              className={`relative flex items-center px-4 py-2 rounded-full text-white font-medium transition-all duration-300 ${
+              className={`relative flex items-center px-4 py-2 rounded-full text-lumen-white font-medium transition-all duration-300 ${
                 isNavigating
                   ? "bg-gray-600 opacity-50 cursor-not-allowed"
-                  : "bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 hover:shadow-lg hover:scale-105"
+                  : "bg-[linear-gradient(45deg,rgba(0,200,255,0.5),rgba(0,255,200,0.5))] hover:bg-[linear-gradient(45deg,rgba(0,200,255,0.7),rgba(0,255,200,0.7))] hover:shadow-[0_0_10px_rgba(0,200,255,0.5)] hover:scale-105"
               }`}
               disabled={isNavigating}
             >
-              {isNavigating ? <Loader /> : "Read More"}
+              {isNavigating ? <Loader /> : "Explore Post"}
               {!isNavigating && (
-                <span className="absolute inset-0 rounded-full border border-blue-400 opacity-0 hover:opacity-100 transition-opacity duration-300" />
+                <span className="absolute inset-0 rounded-full border border-lumen-cyan/40 opacity-0 hover:opacity-100 transition-opacity duration-300 animate-quantumPulseBorder" />
               )}
             </button>
             {user?._id === blog.author?._id && (
               <>
                 <button
                   onClick={() => handleNavigate(`/blogs/edit/${blog._id}`)}
-                  className={`relative flex items-center px-4 py-2 rounded-full text-white font-medium transition-all duration-300 ${
+                  className={`relative flex items-center px-4 py-2 rounded-full text-lumen-white font-medium transition-all duration-300 ${
                     isNavigating
                       ? "bg-gray-600 opacity-50 cursor-not-allowed"
-                      : "bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 hover:shadow-lg hover:scale-105"
+                      : "bg-[linear-gradient(45deg,rgba(0,255,200,0.5),rgba(0,200,255,0.5))] hover:bg-[linear-gradient(45deg,rgba(0,255,200,0.7),rgba(0,200,255,0.7))] hover:shadow-[0_0_10px_rgba(0,255,200,0.5)] hover:scale-105"
                   }`}
                   disabled={isNavigating}
                 >
-                  {isNavigating ? <Loader /> : "Edit"}
+                  {isNavigating ? <Loader /> : "Modify"}
                   {!isNavigating && (
-                    <span className="absolute inset-0 rounded-full border border-green-400 opacity-0 hover:opacity-100 transition-opacity duration-300" />
+                    <span className="absolute inset-0 rounded-full border border-lumen-cyan/40 opacity-0 hover:opacity-100 transition-opacity duration-300 animate-quantumPulseBorder" />
                   )}
                 </button>
                 <button
                   onClick={handleDelete}
-                  className={`relative flex items-center px-4 py-2 rounded-full text-white font-medium transition-all duration-300 ${
+                  className={`relative flex items-center px-4 py-2 rounded-full text-lumen-white font-medium transition-all duration-300 ${
                     deleteMutation.isPending || isNavigating
                       ? "bg-gray-600 opacity-50 cursor-not-allowed"
-                      : "bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 hover:shadow-lg hover:scale-105"
+                      : "bg-[linear-gradient(45deg,rgba(200,0,255,0.5),rgba(150,100,255,0.5))] hover:bg-[linear-gradient(45deg,rgba(200,0,255,0.7),rgba(150,100,255,0.7))] hover:shadow-[0_0_10px_rgba(200,0,255,0.5)] hover:scale-105"
                   }`}
                   disabled={deleteMutation.isPending || isNavigating}
                 >
-                  {deleteMutation.isPending ? <Loader /> : "Delete"}
+                  {deleteMutation.isPending ? <Loader /> : "Remove"}
                   {!deleteMutation.isPending && !isNavigating && (
-                    <span className="absolute inset-0 rounded-full border border-red-400 opacity-0 hover:opacity-100 transition-opacity duration-300" />
+                    <span className="absolute inset-0 rounded-full border border-lumen-magenta/40 opacity-0 hover:opacity-100 transition-opacity duration-300 animate-quantumPulseBorder" />
                   )}
                 </button>
               </>
@@ -113,38 +113,38 @@ export default function BlogCard({ blog }: { blog: BlogPost }) {
       </div>
 
       {isDialogOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-          <div className="bg-gray-900 rounded-xl shadow-2xl p-6 w-full max-w-md transform transition-all duration-300 animate-fadeInUp">
-            <h3 className="text-xl font-bold text-white mb-4">
-              Confirm Deletion
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 animate-fadeIn">
+          <div className="bg-depth-black rounded-xl shadow-[0_0_20px_rgba(0,200,255,0.5)] p-6 w-full max-w-md transform transition-all duration-300 animate-fadeInUp">
+            <h3 className="text-xl font-mono font-semibold text-lumen-white mb-4 animate-depthGlow">
+              Confirm Removal
             </h3>
-            <p className="text-gray-300 mb-6">
-              Are you sure you want to delete{" "}
-              <span className="font-semibold text-blue-400">
-                &quot;{blog.title}&quot;
+            <p className="text-lumen-white/70 font-light mb-6">
+              Are you sure you want to remove{" "}
+              <span className="font-medium text-lumen-cyan">
+                "{blog.title}"
               </span>
-              ? This action cannot be undone.
+              ? This action is permanent.
             </p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setIsDialogOpen(false)}
-                className="relative px-4 py-2 rounded-full text-white font-medium bg-gray-700 hover:bg-gray-600 transition-all duration-300 hover:scale-105"
+                className="relative px-4 py-2 rounded-full text-lumen-white font-medium bg-depth-black/50 border border-lumen-cyan/30 hover:bg-depth-black/70 hover:scale-105 transition-all duration-300"
                 disabled={deleteMutation.isPending}
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteConfirm}
-                className={`relative flex items-center px-4 py-2 rounded-full text-white font-medium transition-all duration-300 ${
+                className={`relative flex items-center px-4 py-2 rounded-full text-lumen-white font-medium transition-all duration-300 ${
                   deleteMutation.isPending
                     ? "bg-gray-600 opacity-50 cursor-not-allowed"
-                    : "bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 hover:shadow-lg hover:scale-105"
+                    : "bg-[linear-gradient(45deg,rgba(200,0,255,0.5),rgba(150,100,255,0.5))] hover:bg-[linear-gradient(45deg,rgba(200,0,255,0.7),rgba(150,100,255,0.7))] hover:shadow-[0_0_10px_rgba(200,0,255,0.5)] hover:scale-105"
                 }`}
                 disabled={deleteMutation.isPending}
               >
-                {deleteMutation.isPending ? <Loader /> : "Delete"}
+                {deleteMutation.isPending ? <Loader /> : "Confirm"}
                 {!deleteMutation.isPending && (
-                  <span className="absolute inset-0 rounded-full border border-red-400 opacity-0 hover:opacity-100 transition-opacity duration-300" />
+                  <span className="absolute inset-0 rounded-full border border-lumen-magenta/40 opacity-0 hover:opacity-100 transition-opacity duration-300 animate-quantumPulseBorder" />
                 )}
               </button>
             </div>
@@ -153,6 +153,28 @@ export default function BlogCard({ blog }: { blog: BlogPost }) {
       )}
 
       <style jsx>{`
+        :global(:root) {
+          --depth-black: #0a0a0f;
+          --lumen-white: #e0f0ff;
+          --lumen-cyan: #00c8ff;
+          --lumen-magenta: #ff00c8;
+        }
+        .bg-depth-black {
+          background-color: var(--depth-black);
+        }
+        .text-lumen-white {
+          color: var(--lumen-white);
+        }
+        .text-lumen-cyan {
+          color: var(--lumen-cyan);
+        }
+        .text-lumen-magenta {
+          color: var(--lumen-magenta);
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
         @keyframes fadeInUp {
           from {
             opacity: 0;
@@ -163,9 +185,21 @@ export default function BlogCard({ blog }: { blog: BlogPost }) {
             transform: translateY(0);
           }
         }
-        .animate-fadeInUp {
-          animation: fadeInUp 0.3s ease-out forwards;
+        @keyframes depthGlow {
+          0%, 100% { text-shadow: 0 0 5px rgba(0, 200, 255, 0.3); }
+          50% { text-shadow: 0 0 10px rgba(0, 200, 255, 0.5), 0 0 5px rgba(255, 0, 200, 0.5); }
         }
+        @keyframes quantumPulseBorder {
+          0% { border-color: rgba(0, 200, 255, 0.4); transform: translate(0, 0); }
+          25% { border-color: rgba(255, 0, 200, 0.45); transform: translate(0.5px, -0.5px); }
+          50% { border-color: rgba(0, 200, 255, 0.35); transform: translate(-0.5px, 0.5px); }
+          75% { border-color: rgba(255, 0, 200, 0.4); transform: translate(0, 0.5px); }
+          100% { border-color: rgba(0, 200, 255, 0.4); transform: translate(0, 0); }
+        }
+        .animate-fadeIn { animation: fadeIn 0.3s ease-in forwards; }
+        .animate-fadeInUp { animation: fadeInUp 0.3s ease-out forwards; }
+        .animate-depthGlow { animation: depthGlow 2s ease-in-out infinite; }
+        .animate-quantumPulseBorder { animation: quantumPulseBorder 1.8s infinite ease-in-out; }
       `}</style>
     </>
   );

@@ -41,7 +41,7 @@ export default function LoginPage() {
       const errorMessage =
         authError.response?.data?.errors?.[0] || // First error from Joi validation
         authError.message ||
-        "Login failed. Please check your credentials.";
+        "Access denied. Please verify your credentials.";
       setServerError(errorMessage);
       console.error("Login failed:", {
         message: authError.message,
@@ -79,40 +79,42 @@ export default function LoginPage() {
       <div className="fixed top-[80px] left-0 w-full min-h-[60px] sm:min-h-[80px] bg-[linear-gradient(45deg,rgba(0,200,255,0.2),rgba(255,0,200,0.2))] p-4 sm:p-6 shadow-[0_0_15px_rgba(0,200,255,0.5)] animate-depthEdge flex items-center justify-between z-60 shrink-0">
         <button
           onClick={handleBack}
-          className="relative text-lumen-white font-mono px-4 py-2 hover:text-lumen-cyan transition-all duration-300 text-sm sm:text-base md:text-lg whitespace-nowrap"
+          className="relative text-lumen-white font-mono font-medium px-4 py-2 bg-[linear-gradient(45deg,rgba(0,200,255,0.5),rgba(0,255,200,0.5))] hover:bg-[linear-gradient(45deg,rgba(0,200,255,0.7),rgba(0,255,200,0.7))] transition-all duration-300 rounded-md text-sm sm:text-base md:text-lg whitespace-nowrap group animate-quantumPulse"
         >
-          Back
-          <span className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-lumen-cyan transform scale-x-0 hover:scale-x-100 transition-transform duration-300 origin-center" />
+          Return to Home
+          <span className="absolute inset-0 bg-lumen-cyan/20 rounded-md scale-0 group-hover:scale-125 transition-transform duration-400 origin-center animate-quantumPulseGlow" />
+          <span className="absolute inset-0 border border-lumen-cyan/40 rounded-md animate-quantumPulseBorder" />
         </button>
-        <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-mono text-lumen-white tracking-wider animate-depthGlow text-center flex-1">
-          Login
+        <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-mono font-semibold text-lumen-white tracking-tight animate-depthGlow text-center flex-1">
+          Access Your Universe
         </h1>
-        <div className="w-12 sm:w-16" /> {/* Spacer */}
+        <div className="w-[120px] sm:w-[180px]" />{" "}
+        {/* Spacer adjusted for longer button text */}
       </div>
 
       {/* Login Form */}
-      <div className="flex-1 w-full p-4 sm:p-6 overflow-y-auto z-10 mt-[120px] sm:mt-[140px] flex items-start justify-center">
+      <div className="flex-1 w-full p-6 sm:p-8 overflow-y-auto z-10 mt-[120px] sm:mt-[140px] flex items-start justify-center">
         <div className="relative w-full max-w-md transform transition-all duration-500 animate-paneRise">
           <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(0,200,255,0.2),rgba(255,0,200,0.2))] opacity-50 rounded-xl animate-paneTrail" />
-          <div className="relative z-10 bg-depth-black/80 p-6 rounded-xl shadow-[0_0_20px_rgba(0,200,255,0.5)] hover:shadow-[0_0_30px_rgba(0,200,255,0.7)] transition-all duration-300">
+          <div className="relative z-10 bg-depth-black/80 p-8 sm:p-10 rounded-xl shadow-[0_0_20px_rgba(0,200,255,0.5)] hover:shadow-[0_0_30px_rgba(0,200,255,0.7)] transition-all duration-300">
             {serverError && (
-              <p className="text-lumen-magenta mb-4 text-center font-medium animate-pulse text-sm sm:text-base">
+              <p className="text-lumen-magenta mb-6 text-center font-semibold animate-pulse text-xl sm:text-2xl animate-depthGlow">
                 {serverError}
               </p>
             )}
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-lumen-white/70 mb-1"
+                  className="block text-lg sm:text-xl font-medium text-lumen-white/80 mb-2 tracking-tight"
                 >
                   Email
                 </label>
                 <input
                   {...register("email")}
                   id="email"
-                  placeholder="Enter your email"
-                  className={`w-full p-3 bg-depth-black text-lumen-white border border-lumen-cyan/20 rounded-md focus:outline-none focus:ring-2 focus:ring-lumen-cyan transition-all duration-300 ${
+                  placeholder="Enter your galactic email"
+                  className={`w-full p-4 bg-depth-black text-lumen-white border border-lumen-cyan/20 rounded-md focus:outline-none focus:ring-2 focus:ring-lumen-cyan transition-all duration-300 ${
                     errors.email
                       ? "border-lumen-magenta"
                       : "hover:border-lumen-cyan/50"
@@ -120,7 +122,7 @@ export default function LoginPage() {
                   disabled={isLoading}
                 />
                 {errors.email && (
-                  <p className="text-lumen-magenta text-sm mt-1 animate-pulse">
+                  <p className="text-lumen-magenta text-lg sm:text-xl mt-2 animate-pulse">
                     {errors.email.message}
                   </p>
                 )}
@@ -128,7 +130,7 @@ export default function LoginPage() {
               <div>
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-lumen-white/70 mb-1"
+                  className="block text-lg sm:text-xl font-medium text-lumen-white/80 mb-2 tracking-tight"
                 >
                   Password
                 </label>
@@ -136,8 +138,8 @@ export default function LoginPage() {
                   {...register("password")}
                   id="password"
                   type="password"
-                  placeholder="Enter your password (min 8 characters)"
-                  className={`w-full p-3 bg-depth-black text-lumen-white border border-lumen-cyan/20 rounded-md focus:outline-none focus:ring-2 focus:ring-lumen-cyan transition-all duration-300 ${
+                  placeholder="Enter your cosmic key (minimum 8 characters)"
+                  className={`w-full p-4 bg-depth-black text-lumen-white border border-lumen-cyan/20 rounded-md focus:outline-none focus:ring-2 focus:ring-lumen-cyan transition-all duration-300 ${
                     errors.password
                       ? "border-lumen-magenta"
                       : "hover:border-lumen-cyan/50"
@@ -145,7 +147,7 @@ export default function LoginPage() {
                   disabled={isLoading}
                 />
                 {errors.password && (
-                  <p className="text-lumen-magenta text-sm mt-1 animate-pulse">
+                  <p className="text-lumen-magenta text-lg sm:text-xl mt-2 animate-pulse">
                     {errors.password.message}
                   </p>
                 )}
@@ -153,13 +155,13 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-full relative flex justify-center items-center px-6 py-3 rounded-md text-lumen-white font-semibold transition-all duration-300 ${
+                className={`w-full relative flex justify-center items-center px-6 py-4 rounded-md text-lumen-white font-semibold transition-all duration-300 ${
                   isLoading
                     ? "bg-gray-600/50 opacity-50 cursor-not-allowed"
-                    : "bg-[linear-gradient(45deg,#00C8FF,#FF00C8)] hover:bg-[linear-gradient(45deg,#00E0FF,#FF33D6)] hover:shadow-[0_0_15px_rgba(0,200,255,0.7)] hover:scale-105"
+                    : "bg-[linear-gradient(45deg,#00C8FF,#FF00C8)] hover:bg-[linear-gradient(45deg,#00E0FF,#FF33D6)] hover:shadow-[0_0_15px_rgba(0,200,255,0.7)] hover:text-shadow-[0_0_10px_rgba(255,255,255,0.8)] hover:scale-105"
                 }`}
               >
-                {isLoading ? <Loader /> : "Login"}
+                {isLoading ? <Loader /> : "Enter Your Universe"}
               </button>
             </form>
           </div>
@@ -171,10 +173,10 @@ export default function LoginPage() {
       <style jsx>{`
         /* Custom Depth Colors */
         :global(:root) {
-          --depth-black: #0A0A0F;
-          --lumen-white: #E0F0FF;
-          --lumen-cyan: #00C8FF;
-          --lumen-magenta: #FF00C8;
+          --depth-black: #0a0a0f;
+          --lumen-white: #e0f0ff;
+          --lumen-cyan: #00c8ff;
+          --lumen-magenta: #ff00c8;
         }
         .bg-depth-black {
           background-color: var(--depth-black);
@@ -272,6 +274,68 @@ export default function LoginPage() {
             border-color: rgba(0, 200, 255, 0.4);
           }
         }
+        @keyframes quantumPulse {
+          0% {
+            transform: translate(0, 0) scale(1);
+            opacity: 0.9;
+          }
+          30% {
+            transform: translate(1px, -1px) scale(1.01);
+            opacity: 0.95;
+          }
+          60% {
+            transform: translate(-1px, 1px) scale(0.99);
+            opacity: 0.85;
+          }
+          100% {
+            transform: translate(0, 0) scale(1);
+            opacity: 0.9;
+          }
+        }
+        @keyframes quantumPulseGlow {
+          0% {
+            transform: scale(0);
+            opacity: 0.3;
+            filter: blur(2px);
+          }
+          40% {
+            transform: scale(1.1);
+            opacity: 0.5;
+            filter: blur(1px);
+          }
+          70% {
+            transform: scale(0.9);
+            opacity: 0.4;
+            filter: blur(3px);
+          }
+          100% {
+            transform: scale(1);
+            opacity: 0.3;
+            filter: blur(2px);
+          }
+        }
+        @keyframes quantumPulseBorder {
+          0% {
+            border-color: rgba(0, 200, 255, 0.4);
+            transform: translate(0, 0);
+          }
+          25% {
+            border-color: rgba(255, 0, 200, 0.45);
+            transform: translate(0.5px, -0.5px);
+          }
+          50% {
+            border-color: rgba(0, 200, 255, 0.35);
+            transform: translate(-0.5px, 0.5px);
+          }
+          75% {
+            border-color: rgba(255, 0, 200, 0.4);
+            transform: translate(0, 0.5px);
+          }
+          100% {
+            border-color: rgba(0, 200, 255, 0.4);
+            transform: translate(0, 0);
+          }
+        }
         .animate-latticeDrift {
           animation: latticeDrift 25s linear infinite;
         }
@@ -295,6 +359,18 @@ export default function LoginPage() {
         }
         .animate-paneEdge {
           animation: paneEdge 2s ease-in-out infinite;
+        }
+        .animate-quantumPulse {
+          animation: quantumPulse 1.2s infinite ease-in-out;
+        }
+        .animate-quantumPulseGlow {
+          animation: quantumPulseGlow 1.5s infinite ease-in-out;
+        }
+        .animate-quantumPulseBorder {
+          animation: quantumPulseBorder 1.8s infinite ease-in-out;
+        }
+        button:hover .animate-quantumPulseGlow {
+          transform: scale(125%);
         }
       `}</style>
     </div>

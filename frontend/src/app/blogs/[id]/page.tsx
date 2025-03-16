@@ -41,6 +41,21 @@ export default function BlogPage({ params }: { params: any }) {
     router.back();
   };
 
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: blog?.title,
+        text: `Check out this blog post: ${blog?.title}`,
+        url: window.location.href,
+      }).catch((err) => console.error("Error sharing:", err));
+    } else {
+      // Fallback: Copy the URL to clipboard
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        alert("Blog post URL copied to clipboard!");
+      }).catch((err) => console.error("Error copying URL:", err));
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen bg-depth-black">
@@ -51,8 +66,8 @@ export default function BlogPage({ params }: { params: any }) {
 
   if (error || !blog) {
     return (
-      <p className="text-center text-lumen-white animate-depthFade bg-depth-black h-screen flex items-center justify-center font-mono text-xl">
-        Blog post not found
+      <p className="text-center text-lumen-white animate-depthFade bg-depth-black h-screen flex items-center justify-center font-mono text-xl font-light animate-depthGlow">
+        We couldn’t find this blog post. Please try again or return to the Blog Hub.
       </p>
     );
   }
@@ -69,35 +84,56 @@ export default function BlogPage({ params }: { params: any }) {
       <div className="fixed top-[80px] left-0 w-full min-h-[60px] sm:min-h-[80px] bg-[linear-gradient(45deg,rgba(0,200,255,0.2),rgba(255,0,200,0.2))] p-4 sm:p-6 shadow-[0_0_15px_rgba(0,200,255,0.5)] animate-depthEdge flex items-center justify-between z-60 shrink-0">
         <button
           onClick={handleBack}
-          className="relative text-lumen-white font-mono px-4 py-2 hover:text-lumen-cyan transition-all duration-300 text-sm sm:text-base md:text-lg whitespace-nowrap"
+          className="relative text-lumen-white font-mono font-medium px-4 py-2 bg-[linear-gradient(45deg,rgba(0,200,255,0.5),rgba(0,255,200,0.5))] hover:bg-[linear-gradient(45deg,rgba(0,200,255,0.7),rgba(0,255,200,0.7))] transition-all duration-300 rounded-md text-sm sm:text-base md:text-lg whitespace-nowrap group animate-quantumPulse"
         >
-          Back
-          <span className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-lumen-cyan transform scale-x-0 hover:scale-x-100 transition-transform duration-300 origin-center" />
+          Return to Blog Hub
+          <span className="absolute inset-0 bg-lumen-cyan/20 rounded-md scale-0 group-hover:scale-125 transition-transform duration-400 origin-center animate-quantumPulseGlow" />
+          <span className="absolute inset-0 border border-lumen-cyan/40 rounded-md animate-quantumPulseBorder" />
         </button>
-        <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-mono text-lumen-white tracking-wider animate-depthGlow text-center flex-1 truncate">
+        <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-mono font-semibold text-lumen-white tracking-tight animate-depthGlow text-center flex-1 truncate hover:text-shadow-[0_0_10px_rgba(0,200,255,0.8)] transition-all duration-300">
           {blog.title}
         </h1>
-        <div className="w-12 sm:w-16" /> {/* Spacer */}
+        <div className="w-[120px] sm:w-[180px]" /> {/* Spacer adjusted for longer button text */}
       </div>
 
       {/* Blog Content */}
       <div className="flex-1 w-full p-4 sm:p-6 overflow-y-auto z-10 mt-[120px] sm:mt-[140px] flex items-start justify-center">
-        <div className="relative w-full max-w-4xl transform transition-all duration-500 animate-paneRise">
+        <div className="relative w-full max-w-3xl transform transition-all duration-500 animate-paneRise">
           <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(0,200,255,0.2),rgba(255,0,200,0.2))] opacity-50 rounded-xl animate-paneTrail" />
-          <div className="relative z-10 bg-depth-black/80 p-6 rounded-xl shadow-[0_0_20px_rgba(0,200,255,0.5)] hover:shadow-[0_0_30px_rgba(0,200,255,0.7)] transition-all duration-300">
-            <p className="text-lumen-white text-base sm:text-lg leading-relaxed mb-6">
-              {blog.content}
-            </p>
-            <p className="text-sm text-lumen-white/70 italic">
-              By{" "}
-              <span className="font-semibold text-lumen-cyan hover:text-lumen-magenta transition-colors duration-300">
-                {blog.author?.username ?? "Unknown Author"}
-              </span>{" "}
-              on{" "}
-              <span className="font-semibold">
-                {new Date(blog.createdAt).toLocaleDateString()}
-              </span>
-            </p>
+          <div className="relative z-10 bg-depth-black/80 p-8 sm:p-10 rounded-xl shadow-[0_0_20px_rgba(0,200,255,0.5)] hover:shadow-[0_0_30px_rgba(0,200,255,0.7)] transition-all duration-300">
+            <div className="text-lumen-white/90 text-lg sm:text-xl font-light leading-loose tracking-wide mb-8">
+              {blog.content.split("\n").map((paragraph, index) => (
+                <p key={index} className="mb-4 last:mb-0">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+            <div className="border-t border-lumen-cyan/20 my-6" />
+            <div className="space-y-4">
+              <p className="text-base text-lumen-white/50 font-light italic tracking-tight animate-depthGlow">
+                Authored by{" "}
+                <span className="font-medium text-lumen-cyan hover:text-lumen-cyan/80 transition-colors duration-300">
+                  {blog.author?.username ?? "Unknown Author"}
+                </span>{" "}
+                on{" "}
+                <span className="font-medium">
+                  {new Date(blog.createdAt).toLocaleString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
+                    hour12: true,
+                  })}
+                </span>
+              </p>
+              <button
+                onClick={handleShare}
+                className="text-lumen-cyan font-medium text-base italic hover:text-lumen-cyan/80 transition-colors duration-300 animate-depthGlow"
+              >
+                Share this Post
+              </button>
+            </div>
           </div>
           <div className="absolute inset-0 border border-lumen-cyan/20 rounded-xl animate-paneEdge" />
         </div>
@@ -214,6 +250,25 @@ export default function BlogPage({ params }: { params: any }) {
             opacity: 1;
           }
         }
+        @keyframes quantumPulse {
+          0% { transform: translate(0, 0) scale(1); opacity: 0.9; }
+          30% { transform: translate(1px, -1px) scale(1.01); opacity: 0.95; }
+          60% { transform: translate(-1px, 1px) scale(0.99); opacity: 0.85; }
+          100% { transform: translate(0, 0) scale(1); opacity: 0.9; }
+        }
+        @keyframes quantumPulseGlow {
+          0% { transform: scale(0); opacity: 0.3; filter: blur(2px); }
+          40% { transform: scale(1.1); opacity: 0.5; filter: blur(1px); }
+          70% { transform: scale(0.9); opacity: 0.4; filter: blur(3px); }
+          100% { transform: scale(1); opacity: 0.3; filter: blur(2px); }
+        }
+        @keyframes quantumPulseBorder {
+          0% { border-color: rgba(0, 200, 255, 0.4); transform: translate(0, 0); }
+          25% { border-color: rgba(255, 0, 200, 0.45); transform: translate(0.5px, -0.5px); }
+          50% { border-color: rgba(0, 200, 255, 0.35); transform: translate(-0.5px, 0.5px); }
+          73% { border-color: rgba(255, 0, 200, 0.4); transform: translate(0, 0.5px); }
+          100% { border-color: rgba(0, 200, 255, 0.4); transform: translate(0, 0); }
+        }
         .animate-latticeDrift {
           animation: latticeDrift 25s linear infinite;
         }
@@ -240,6 +295,18 @@ export default function BlogPage({ params }: { params: any }) {
         }
         .animate-depthFade {
           animation: depthFade 1.5s ease-in-out infinite;
+        }
+        .animate-quantumPulse {
+          animation: quantumPulse 1.2s infinite ease-in-out;
+        }
+        .animate-quantumPulseGlow {
+          animation: quantumPulseGlow 1.5s infinite ease-in-out;
+        }
+        .animate-quantumPulseBorder {
+          animation: quantumPulseBorder 1.8s infinite ease-in-out;
+        }
+        button:hover .animate-quantumPulseGlow {
+          transform: scale(125%);
         }
       `}</style>
     </div>

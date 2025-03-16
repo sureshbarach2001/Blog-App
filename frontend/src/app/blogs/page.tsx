@@ -6,7 +6,7 @@ import BlogCard from "@/components/BlogCard";
 import { BlogPost } from "@/types";
 import Loader from "@/components/Loader";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react"; // Added useEffect
+import { useState, useEffect } from "react";
 
 export default function BlogsPage() {
   const router = useRouter();
@@ -51,8 +51,8 @@ export default function BlogsPage() {
 
   if (error || !blogs) {
     return (
-      <p className="text-center text-lumen-white animate-depthFade bg-depth-black h-screen flex items-center justify-center font-mono text-xl">
-        Error loading blogs
+      <p className="text-center text-lumen-white animate-depthFade bg-depth-black h-screen flex items-center justify-center font-mono text-xl font-light animate-depthGlow">
+        We’re unable to load the Blog Hub at this time. Please try again later.
       </p>
     );
   }
@@ -69,20 +69,21 @@ export default function BlogsPage() {
       <div className="fixed top-[80px] left-0 w-full min-h-[60px] sm:min-h-[80px] bg-[linear-gradient(45deg,rgba(0,200,255,0.2),rgba(255,0,200,0.2))] p-4 sm:p-6 shadow-[0_0_15px_rgba(0,200,255,0.5)] animate-depthEdge flex items-center justify-between z-60 shrink-0">
         <button
           onClick={handleBack}
-          className="relative text-lumen-white font-mono px-4 py-2 hover:text-lumen-cyan transition-all duration-300 text-sm sm:text-base md:text-lg whitespace-nowrap"
+          className="relative text-lumen-white font-mono font-medium px-4 py-2 bg-[linear-gradient(45deg,rgba(0,200,255,0.5),rgba(0,255,200,0.5))] hover:bg-[linear-gradient(45deg,rgba(0,200,255,0.7),rgba(0,255,200,0.7))] transition-all duration-300 rounded-md text-sm sm:text-base md:text-lg whitespace-nowrap group animate-quantumPulse"
         >
-          Back
-          <span className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-lumen-cyan transform scale-x-0 hover:scale-x-100 transition-transform duration-300 origin-center" />
+          Return to Home
+          <span className="absolute inset-0 bg-lumen-cyan/20 rounded-md scale-0 group-hover:scale-125 transition-transform duration-400 origin-center animate-quantumPulseGlow" />
+          <span className="absolute inset-0 border border-lumen-cyan/40 rounded-md animate-quantumPulseBorder" />
         </button>
-        <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-mono text-lumen-white tracking-wider animate-depthGlow text-center flex-1">
-          All Blogs
+        <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-mono font-semibold text-lumen-white tracking-tight animate-depthGlow text-center flex-1">
+          Blog Hub
         </h2>
-        <div className="w-12 sm:w-16" /> {/* Spacer */}
+        <div className="w-[100px] sm:w-[140px]" /> {/* Spacer adjusted for longer button text */}
       </div>
 
       {/* Blog Cards */}
-      <div className="flex-1 w-full p-4 sm:p-6 overflow-y-auto z-10 mt-[60px] sm:mt-[80px]">
-        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 h-full">
+      <div className="flex-1 w-full p-6 sm:p-8 overflow-y-auto z-10 mt-[60px] sm:mt-[80px]">
+        <div className="grid gap-8 sm:gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 h-full">
           {blogs.map((blog, index) => (
             <div
               key={blog._id}
@@ -99,7 +100,7 @@ export default function BlogsPage() {
                   transform: `perspective(500px) rotateY(${hoverIndex === index ? 5 : 0}deg) rotateX(${hoverIndex === index ? -5 : 0}deg)`,
                 }}
               />
-              <div className="relative z-10 transform hover:scale-105 hover:shadow-[0_0_20px_rgba(0,200,255,0.5)] transition-all duration-300 w-full">
+              <div className="relative z-10 transform transition-all duration-300 w-full">
                 <BlogCard blog={blog} />
               </div>
               <div
@@ -222,6 +223,25 @@ export default function BlogsPage() {
             opacity: 1;
           }
         }
+        @keyframes quantumPulse {
+          0% { transform: translate(0, 0) scale(1); opacity: 0.9; }
+          30% { transform: translate(1px, -1px) scale(1.01); opacity: 0.95; }
+          60% { transform: translate(-1px, 1px) scale(0.99); opacity: 0.85; }
+          100% { transform: translate(0, 0) scale(1); opacity: 0.9; }
+        }
+        @keyframes quantumPulseGlow {
+          0% { transform: scale(0); opacity: 0.3; filter: blur(2px); }
+          40% { transform: scale(1.1); opacity: 0.5; filter: blur(1px); }
+          70% { transform: scale(0.9); opacity: 0.4; filter: blur(3px); }
+          100% { transform: scale(1); opacity: 0.3; filter: blur(2px); }
+        }
+        @keyframes quantumPulseBorder {
+          0% { border-color: rgba(0, 200, 255, 0.4); transform: translate(0, 0); }
+          25% { border-color: rgba(255, 0, 200, 0.45); transform: translate(0.5px, -0.5px); }
+          50% { border-color: rgba(0, 200, 255, 0.35); transform: translate(-0.5px, 0.5px); }
+          75% { border-color: rgba(255, 0, 200, 0.4); transform: translate(0, 0.5px); }
+          100% { border-color: rgba(0, 200, 255, 0.4); transform: translate(0, 0); }
+        }
         .animate-latticeDrift {
           animation: latticeDrift 25s linear infinite;
         }
@@ -248,6 +268,18 @@ export default function BlogsPage() {
         }
         .animate-depthFade {
           animation: depthFade 1.5s ease-in-out infinite;
+        }
+        .animate-quantumPulse {
+          animation: quantumPulse 1.2s infinite ease-in-out;
+        }
+        .animate-quantumPulseGlow {
+          animation: quantumPulseGlow 1.5s infinite ease-in-out;
+        }
+        .animate-quantumPulseBorder {
+          animation: quantumPulseBorder 1.8s infinite ease-in-out;
+        }
+        button:hover .animate-quantumPulseGlow {
+          transform: scale(125%);
         }
       `}</style>
     </div>
