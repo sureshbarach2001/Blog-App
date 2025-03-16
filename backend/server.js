@@ -26,7 +26,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://nivox-personal-blog-platform.vercel.app",
+      "https://nivox.vercel.app",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
