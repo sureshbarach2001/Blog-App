@@ -88,7 +88,7 @@ export default function CreateBlogPage() {
   };
 
   const handleBack = () => {
-    router.back();
+    router.push("/blogs");
   };
 
   return (

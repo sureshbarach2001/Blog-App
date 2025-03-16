@@ -43,7 +43,7 @@ export default function BlogPage({ params }: { params: any }) {
   });
 
   const handleBack = () => {
-    router.back();
+    router.push("/blogs");
   };
 
   const handleShare = () => {

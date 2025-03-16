@@ -113,7 +113,7 @@ export default function EditBlogPage({ params }: { params: any }) {
   };
 
   const handleBack = () => {
-    router.back();
+    router.push("/blogs");
   };
 
   if (isLoading) {

@@ -44,7 +44,7 @@ export default function BlogsPage() {
   });
 
   const handleBack = () => {
-    router.back();
+    router.push("/");
   };
 
   if (isLoading) {
