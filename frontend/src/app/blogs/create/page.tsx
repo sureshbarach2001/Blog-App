@@ -9,6 +9,12 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import Loader from "@/components/Loader";
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+
+// Dynamic import for LottieButton to ensure it only loads on the client
+const LottieButton = dynamic(() => import("@/components/LottieButton"), {
+  ssr: false, // Disable server-side rendering for this component
+});
 
 interface ApiError {
   response?: {
@@ -98,18 +104,12 @@ export default function CreateBlogPage() {
 
       {/* Heading Section */}
       <div className="fixed top-[80px] left-0 w-full min-h-[60px] sm:min-h-[80px] bg-[linear-gradient(45deg,rgba(0,200,255,0.2),rgba(255,0,200,0.2))] p-4 sm:p-6 shadow-[0_0_15px_rgba(0,200,255,0.5)] animate-depthEdge flex items-center justify-between z-60 shrink-0">
-        <button
-          onClick={handleBack}
-          className="relative text-lumen-white font-mono font-medium px-4 py-2 bg-[linear-gradient(45deg,rgba(0,200,255,0.5),rgba(0,255,200,0.5))] hover:bg-[linear-gradient(45deg,rgba(0,200,255,0.7),rgba(0,255,200,0.7))] transition-all duration-300 rounded-md text-sm sm:text-base md:text-lg whitespace-nowrap group animate-quantumPulse"
-        >
-          Return to Previous Universe
-          <span className="absolute inset-0 bg-lumen-cyan/20 rounded-md scale-0 group-hover:scale-125 transition-transform duration-400 origin-center animate-quantumPulseGlow" />
-          <span className="absolute inset-0 border border-lumen-cyan/40 rounded-md animate-quantumPulseBorder" />
-        </button>
+        {/* Lottie Back Button */}
+        <LottieButton onClick={handleBack} path="/icons/Left-Arrow.json" />
         <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-mono font-semibold text-lumen-white tracking-tight animate-depthGlow text-center flex-1">
           Create Your Masterpiece
         </h1>
-        <div className="w-[120px] sm:w-[180px]" /> {/* Spacer adjusted for longer button text */}
+        <div className="w-[40px]" /> {/* Adjusted spacer for Lottie button */}
       </div>
 
       {/* Form */}
@@ -284,7 +284,7 @@ export default function CreateBlogPage() {
         .animate-quantumPulse { animation: quantumPulse 1.2s infinite ease-in-out; }
         .animate-quantumPulseGlow { animation: quantumPulseGlow 1.5s infinite ease-in-out; }
         .animate-quantumPulseBorder { animation: quantumPulseBorder 1.8s infinite ease-in-out; }
-        button:hover .animate-quantumPulseGlow { transform: scale(125%); }
+        .group:hover .animate-quantumPulseGlow { transform: scale(125%); }
       `}</style>
     </div>
   );

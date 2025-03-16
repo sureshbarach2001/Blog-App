@@ -7,11 +7,17 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Loader from "@/components/Loader";
+import dynamic from "next/dynamic";
+
+// Dynamic import for LottieButton to ensure it only loads on the client
+const LottieButton = dynamic(() => import("@/components/LottieButton"), {
+  ssr: false, // Disable server-side rendering for this component
+});
 
 interface AuthError {
   response?: {
     data?: {
-      errors?: string[]; // Matches Joi's error format
+      errors?: string[];
     };
     status?: number;
   };
@@ -39,7 +45,7 @@ export default function LoginPage() {
     } catch (error: unknown) {
       const authError = error as AuthError;
       const errorMessage =
-        authError.response?.data?.errors?.[0] || // First error from Joi validation
+        authError.response?.data?.errors?.[0] ||
         authError.message ||
         "Access denied. Please verify your credentials.";
       setServerError(errorMessage);
@@ -77,19 +83,11 @@ export default function LoginPage() {
 
       {/* Heading Section */}
       <div className="fixed top-[80px] left-0 w-full min-h-[60px] sm:min-h-[80px] bg-[linear-gradient(45deg,rgba(0,200,255,0.2),rgba(255,0,200,0.2))] p-4 sm:p-6 shadow-[0_0_15px_rgba(0,200,255,0.5)] animate-depthEdge flex items-center justify-between z-60 shrink-0">
-        <button
-          onClick={handleBack}
-          className="relative text-lumen-white font-mono font-medium px-4 py-2 bg-[linear-gradient(45deg,rgba(0,200,255,0.5),rgba(0,255,200,0.5))] hover:bg-[linear-gradient(45deg,rgba(0,200,255,0.7),rgba(0,255,200,0.7))] transition-all duration-300 rounded-md text-sm sm:text-base md:text-lg whitespace-nowrap group animate-quantumPulse"
-        >
-          Return to Previous Universe
-          <span className="absolute inset-0 bg-lumen-cyan/20 rounded-md scale-0 group-hover:scale-125 transition-transform duration-400 origin-center animate-quantumPulseGlow" />
-          <span className="absolute inset-0 border border-lumen-cyan/40 rounded-md animate-quantumPulseBorder" />
-        </button>
+        <LottieButton onClick={handleBack} path="/icons/Left-Arrow.json" />
         <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-mono font-semibold text-lumen-white tracking-tight animate-depthGlow text-center flex-1">
           Access Your Universe
         </h1>
-        <div className="w-[120px] sm:w-[180px]" />{" "}
-        {/* Spacer adjusted for longer button text */}
+        <div className="w-[40px]" /> {/* Spacer for Lottie button */}
       </div>
 
       {/* Login Form */}
@@ -173,10 +171,10 @@ export default function LoginPage() {
       <style jsx>{`
         /* Custom Depth Colors */
         :global(:root) {
-          --depth-black: #0a0a0f;
-          --lumen-white: #e0f0ff;
-          --lumen-cyan: #00c8ff;
-          --lumen-magenta: #ff00c8;
+          --depth-black: #0A0A0F;
+          --lumen-white: #E0F0FF;
+          --lumen-cyan: #00C8FF;
+          --lumen-magenta: #FF00C8;
         }
         .bg-depth-black {
           background-color: var(--depth-black);
@@ -355,7 +353,7 @@ export default function LoginPage() {
           animation: paneRise 0.5s ease-out forwards;
         }
         .animate-paneTrail {
-          animation: paneTrail 1.5s ease-in-out infinite;
+          animation: paneTrail 1.5s ease-in-out infinite 
         }
         .animate-paneEdge {
           animation: paneEdge 2s ease-in-out infinite;
@@ -369,7 +367,7 @@ export default function LoginPage() {
         .animate-quantumPulseBorder {
           animation: quantumPulseBorder 1.8s infinite ease-in-out;
         }
-        button:hover .animate-quantumPulseGlow {
+        .group:hover .animate-quantumPulseGlow {
           transform: scale(125%);
         }
       `}</style>

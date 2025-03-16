@@ -6,14 +6,19 @@ import Loader from "@/components/Loader";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { BlogPost } from "@/types";
+import dynamic from "next/dynamic";
+
+// Dynamic import for LottieButton
+const LottieButton = dynamic(() => import("@/components/LottieButton"), {
+  ssr: false,
+});
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function BlogPage({ params }: { params: any }) {
-  const { id } = params as { id: string }; // Safely cast params to expected shape
+  const { id } = params as { id: string };
   const router = useRouter();
   const [latticeNodes, setLatticeNodes] = useState<React.ReactNode[]>([]);
 
-  // Generate lattice nodes only on client-side mount
   useEffect(() => {
     const nodes = Array.from({ length: 20 }).map((_, i) => (
       <div
@@ -49,7 +54,6 @@ export default function BlogPage({ params }: { params: any }) {
         url: window.location.href,
       }).catch((err) => console.error("Error sharing:", err));
     } else {
-      // Fallback: Copy the URL to clipboard
       navigator.clipboard.writeText(window.location.href).then(() => {
         alert("Blog post URL copied to clipboard!");
       }).catch((err) => console.error("Error copying URL:", err));
@@ -76,31 +80,24 @@ export default function BlogPage({ params }: { params: any }) {
     <div className="fixed inset-0 bg-depth-black flex flex-col overflow-hidden pt-[80px] z-10">
       {/* Infinite-Depth Lattice */}
       <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(20,20,30,0.9)_50%,rgba(0,0,0,1)_50%)] bg-[length:30px_30px] animate-latticeDrift">
-        <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(20,20,30,0.9)_50%,rgba(0,0,0,1)_50%)] bg-[length:30px_30px] animate-latticeDriftReverse" />
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(21, 21, 63, 0.9)_50%,rgba(0,0,0,1)_50%)] bg-[length:30px_30px] animate-latticeDriftReverse" />
         <div className="absolute inset-0">{latticeNodes}</div>
       </div>
 
       {/* Heading Section */}
       <div className="fixed top-[80px] left-0 w-full min-h-[60px] sm:min-h-[80px] bg-[linear-gradient(45deg,rgba(0,200,255,0.2),rgba(255,0,200,0.2))] p-4 sm:p-6 shadow-[0_0_15px_rgba(0,200,255,0.5)] animate-depthEdge flex items-center justify-between z-60 shrink-0">
-        <button
-          onClick={handleBack}
-          className="relative text-lumen-white font-mono font-medium px-4 py-2 bg-[linear-gradient(45deg,rgba(0,200,255,0.5),rgba(0,255,200,0.5))] hover:bg-[linear-gradient(45deg,rgba(0,200,255,0.7),rgba(0,255,200,0.7))] transition-all duration-300 rounded-md text-sm sm:text-base md:text-lg whitespace-nowrap group animate-quantumPulse"
-        >
-          Return to Previous Universe
-          <span className="absolute inset-0 bg-lumen-cyan/20 rounded-md scale-0 group-hover:scale-125 transition-transform duration-400 origin-center animate-quantumPulseGlow" />
-          <span className="absolute inset-0 border border-lumen-cyan/40 rounded-md animate-quantumPulseBorder" />
-        </button>
+        <LottieButton onClick={handleBack} path="/icons/Left-Arrow.json" />
         <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-mono font-semibold text-lumen-white tracking-tight animate-depthGlow text-center flex-1 truncate hover:text-shadow-[0_0_10px_rgba(0,200,255,0.8)] transition-all duration-300">
           {blog.title}
         </h1>
-        <div className="w-[120px] sm:w-[180px]" /> {/* Spacer adjusted for longer button text */}
+        <div className="w-[40px]" /> {/* Spacer for Lottie button */}
       </div>
 
       {/* Blog Content */}
       <div className="flex-1 w-full p-4 sm:p-6 overflow-y-auto z-10 mt-[120px] sm:mt-[140px] flex items-start justify-center">
         <div className="relative w-full max-w-3xl transform transition-all duration-500 animate-paneRise">
-          <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(0,200,255,0.2),rgba(255,0,200,0.2))] opacity-50 rounded-xl animate-paneTrail" />
-          <div className="relative z-10 bg-depth-black/80 p-8 sm:p-10 rounded-xl shadow-[0_0_20px_rgba(0,200,255,0.5)] hover:shadow-[0_0_30px_rgba(0,200,255,0.7)] transition-all duration-300">
+          <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(11, 44, 53, 0.2),rgba(255,0,200,0.2))] opacity-50 rounded-xl animate-paneTrail" />
+          <div className="relative z-10 bg-depth-black/95 p-8 sm:p-10 rounded-xl shadow-[0_0_20px_rgba(0,200,255,0.5)] hover:shadow-[0_0_30px_rgba(0,200,255,0.7)] transition-all duration-300">
             <div className="text-lumen-white/90 text-lg sm:text-xl font-light leading-loose tracking-wide mb-8">
               {blog.content.split("\n").map((paragraph, index) => (
                 <p key={index} className="mb-4 last:mb-0">
@@ -305,7 +302,7 @@ export default function BlogPage({ params }: { params: any }) {
         .animate-quantumPulseBorder {
           animation: quantumPulseBorder 1.8s infinite ease-in-out;
         }
-        button:hover .animate-quantumPulseGlow {
+        .group:hover .animate-quantumPulseGlow {
           transform: scale(125%);
         }
       `}</style>
