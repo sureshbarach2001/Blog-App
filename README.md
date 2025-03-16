@@ -222,6 +222,7 @@ npm run dev
 - **Current Status:** Beta (Actively maintained and developed).
 - **Version:** 1.0.0
 - **Last Updated:** March 16, 2025
+- **Release**: [v1.0.0](https://github.com/sureshbarach2001/NIVOX-Personal-Blog-Platform/releases/tag/v1.0.0)
 ---
 # ⚠️ Known Issues
 - **CORS Issues in Production:** Due to Render's proxy behavior, you might encounter CORS errors when fetching blog data. Ensure the backend's CORS configuration includes the frontend origin (https://nivox.vercel.app) and that Render isn't stripping headers. See this section for deployment details.
