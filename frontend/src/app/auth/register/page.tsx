@@ -82,7 +82,7 @@ export default function RegisterPage() {
           onClick={handleBack}
           className="relative text-lumen-white font-mono font-medium px-4 py-2 bg-[linear-gradient(45deg,rgba(0,200,255,0.5),rgba(0,255,200,0.5))] hover:bg-[linear-gradient(45deg,rgba(0,200,255,0.7),rgba(0,255,200,0.7))] transition-all duration-300 rounded-md text-sm sm:text-base md:text-lg whitespace-nowrap group animate-quantumPulse"
         >
-          Return to Home
+          Return to Previous Universe
           <span className="absolute inset-0 bg-lumen-cyan/20 rounded-md scale-0 group-hover:scale-125 transition-transform duration-400 origin-center animate-quantumPulseGlow" />
           <span className="absolute inset-0 border border-lumen-cyan/40 rounded-md animate-quantumPulseBorder" />
         </button>

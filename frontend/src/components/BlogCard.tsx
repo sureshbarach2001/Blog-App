@@ -121,7 +121,7 @@ export default function BlogCard({ blog }: { blog: BlogPost }) {
             <p className="text-lumen-white/70 font-light mb-6">
               Are you sure you want to remove{" "}
               <span className="font-medium text-lumen-cyan">
-                "{blog.title}"
+                &quot;{blog.title}&quot;
               </span>
               ? This action is permanent.
             </p>

@@ -91,7 +91,10 @@ export default function Navbar() {
       await logout();
       router.push("/");
     } catch (error) {
+      // Explicitly using the error parameter to log the issue
       console.error("Logout failed:", error);
+      // Optionally, you can set an error state to display to the user
+      setFormStatus("Logout failed. Please try again.");
     } finally {
       setLoadingStates((prev) => ({ ...prev, logout: false }));
     }
@@ -128,6 +131,8 @@ export default function Navbar() {
       setFormData({ name: "", email: "", message: "" });
       setTimeout(() => setIsContactModalOpen(false), 2000);
     } catch (error) {
+       // Explicitly using the error parameter to log the issue
+       console.error("Logout failed:", error);
       setFormStatus("Failed to send. Please try again later.");
     } finally {
       setLoadingStates((prev) => ({ ...prev, contact: false }));
