@@ -21,26 +21,64 @@ connectDB();
 const app = express();
 
 // 🔒 Security Middleware
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'"],
+      },
+    },
+    permissionsPolicy: {
+      features: {
+        // Explicitly disable experimental features causing warnings
+        "browsing-topics": ["none"],
+        "run-ad-auction": ["none"],
+        "join-ad-interest-group": ["none"],
+        "private-state-token-redemption": ["none"],
+        "private-state-token-issuance": ["none"],
+        "private-aggregation": ["none"],
+        "attribution-reporting": ["none"],
+        // Add supported features if needed
+        geolocation: ["none"],
+        microphone: ["none"],
+        camera: ["none"],
+      },
+    },
+  })
+);
+
+// Enable CORS with explicit configuration
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://nivox.vercel.app",
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        "http://localhost:3000",
+        "https://nivox.vercel.app",
+      ];
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.log(`CORS rejected origin: ${origin}`); // Debug log
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
+
+// Handle CORS preflight requests explicitly
+app.options("*", cors()); // Respond to OPTIONS requests
+
 app.use(mongoSanitize());
 app.use(xss());
 app.use(compression());
 
 // 📜 Logging Middleware
-if (process.env.NODE_ENV !== "production") {
-  app.use(morgan("dev"));
-}
+app.use(morgan("combined")); // Use 'combined' for detailed logs in production
 
 // Rate Limiting Middleware
 const limiter = rateLimit({
@@ -53,6 +91,13 @@ app.use(limiter);
 // Middleware for parsing JSON & URL-encoded data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Debug middleware to log incoming requests and headers
+app.use((req, res, next) => {
+  console.log(`Request: ${req.method} ${req.url} from origin: ${req.headers.origin}`);
+  console.log("Request Headers:", req.headers); // Log all headers for debugging
+  next();
+});
 
 // ✅ API Test Route
 app.get("/api/test", (req, res) => {
